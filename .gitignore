@@ -14,3 +14,6 @@ pb_data/
 # ignore executable
 pocketbase
 pocketbase*.zip
+
+# ignore Mac files
+.DS_Store
