@@ -31,9 +31,7 @@ module.exports = (function() {
 							{Wallet.list.map(function(wallet) {
 								return (<li><m.route.Link href={"/wallets/"+wallet.id} key={wallet.id}>{wallet.name}</m.route.Link></li>)
 							})}
-							<li><m.route.Link href="/wallets/1">Checking</m.route.Link></li>
-							<li><m.route.Link href="/wallets/2">Credit Card</m.route.Link></li>
-							<li><m.route.Link href="/wallets/3">Cash</m.route.Link></li>
+							{Wallet.list.length == 0 && (<li><i>You don't have any wallets yet</i></li>)}
 							<li><m.route.Link href="/wallets/create"><i class="material-icons">add</i>New Wallet</m.route.Link></li>
 						</ul>
 					</div>
