@@ -1,5 +1,6 @@
 const m = require("mithril")
 const Layout = require("../layouts/Layout")
+const Icon = require("../components/Icon.jsx")
 
 const Wallet = require("../models/Wallet")
 const Currency = require("../models/Currency")
@@ -46,12 +47,21 @@ module.exports = (function() {
 						{errorMessage.length > 0 && (
 							<div class="card-panel red accent-1"><span class="material-icons outlined">error</span>&nbsp;{errorMessage}</div>
 						)}
-						<div class="input-field col s12">
-							<input type="text" 
-								id="create_wallet_name"
-								oninput={function(e) {Wallet.current.name = e.target.value}}
-								value={Wallet.current.name} />
-							<label for="create_wallet_name">Name</label>
+	
+						<div class="col s3 m1">
+							<Icon icon={{type: "color", name: "AA", color: "#82CAFF"}} marginX={true} />
+						</div>
+						<div class="col s9 m11">
+							<p>Click the icon to customize it</p>
+						</div>
+						<div class="col s12">
+							<div class="input-field">
+								<input type="text" 
+									id="create_wallet_name"
+									oninput={function(e) {Wallet.current.name = e.target.value}}
+									value={Wallet.current.name} />
+								<label for="create_wallet_name">Name</label>
+							</div>
 						</div>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">search</i>
@@ -74,7 +84,7 @@ module.exports = (function() {
 								step="any"
 								onchange={function(e) {Wallet.current.start_money = e.target.value}}
 								value={Wallet.current.start_money} />
-							<label for="create_wallet_start_money">Initial balance</label>
+							<label for="create_wallet_start_money" class="active">Initial balance</label>
 						</div>
 						<div class="input-field col s12">
 							<i class="material-icons prefix">note</i>
