@@ -1,0 +1,7 @@
+.collection-item.avatar > .round-icon:nth-child(1) {
+	position: absolute;
+	overflow: hidden;
+	left: 15px;
+	display: inline-block;
+	vertical-align: middle;
+}
