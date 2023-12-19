@@ -37,6 +37,7 @@ module.exports = (function() {
 						</div>
 						<button class="btn waves-effect waves-light" type="submit">Login</button>
 					</form>
+					<p class="col s12">Don't have an account yet? <m.route.Link href="/register">Register</m.route.Link></p>
 				</div>
 			</Layout>);
 		}
