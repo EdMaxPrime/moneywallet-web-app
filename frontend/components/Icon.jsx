@@ -8,6 +8,8 @@ require("./Icon.css")
  *   <Icon icon={{type: "resource", resource: "folder"}}
  * - Color: this will be 1 or 2 letters with a color background. Example:
  *   <Icon icon={{type: "color", color: "#FFFFFF", name: "AZ"}}
+ * @attribute marginX  if true, then there will be a margin to the right and left
+ *            default false
  */
 module.exports = {
 	view: function(vnode) {
