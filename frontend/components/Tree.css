@@ -1,0 +1,9 @@
+ul.tree {
+	list-style-type: none;
+}
+
+/* Tree inside a tree should have an indent
+The indent amount is the same as the width of an icon. */
+ul.tree ul.tree {
+	padding-left: 2.5em;
+}
