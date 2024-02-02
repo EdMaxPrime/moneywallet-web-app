@@ -1,19 +1,27 @@
 const m = require("mithril")
 const Layout = require("../layouts/Layout")
-const TransactionItem = require("../components/TransactionItem")
+const TransactionList = require("../components/TransactionList")
 
-const data = [{desc: "first"}, {desc: "second"}, {desc: "third"}];
+const Category = require("../models/Category")
+const Currency = require("../models/Currency")
+const Transaction = require("../models/Transaction")
+const Wallet = require("../models/Wallet")
+
 
 module.exports = {
+	oninit: function() {
+		Promise.all([
+			Category.loadList(),
+			Currency.loadList(),
+			Transaction.loadList(),
+			Wallet.loadList()
+			]).then(m.redraw)
+		.catch(reason => console.log("Promise failed ", reason));
+	},
 	view: function() {
 		return (
 			<Layout title="Transactions">
-				<ul class="collection with-header">
-					<li class="collection-header"><h6>Sun Dec 4, 2023</h6></li>
-					{data.map(t => <TransactionItem t={t}/>)}
-					<li class="collection-header"><h6>Sat Dec 10, 2023</h6></li>
-					{data.map(t => <TransactionItem t={t}/>)}
-				</ul>
+				<TransactionList transactions={Transaction.list} />
 			</Layout>);
 	}
 }
