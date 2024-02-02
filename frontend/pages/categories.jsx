@@ -23,11 +23,6 @@ module.exports = (function() {
 		view: function() {
 			return (
 				<Layout title="Categories">
-					{/*<div class="row">
-						<div class="col s6 m4">
-							<h1>Incomes</h1>
-						</div>
-					</div>*/}
 					<Tabs labels={["Income", "Expense", "System"]}>
 						<div id="income-categories-tree" class="col s12">
 							<Tree nodes={Category.getTree(Category.income)} />
@@ -39,25 +34,6 @@ module.exports = (function() {
 							<Tree nodes={Category.getTree(Category.system)} />
 						</div>
 					</Tabs>
-
-					{/*<div class="row">
-						<div class="col s12">
-							<ul class="tabs">
-								<li class="tab col s4"><a href="#income-categories-tree">Incomes</a></li>
-								<li class="tab col s4"><a href="#expense-categories-tree">Expenses</a></li>
-								<li class="tab col s4"><a href="#system-categories-tree">System</a></li>
-							</ul>
-						</div>
-						<div id="income-categories-tree" class="col s12">
-							stuff 1
-						</div>
-						<div id="expense-categories-tree" class="col s12">
-							stuff 2
-						</div>
-						<div id="system-categories-tree" class="col s12">
-							stuff 3
-						</div>
-					</div>*/}
 				</Layout>
 			);
 		}
