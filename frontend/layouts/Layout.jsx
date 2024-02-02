@@ -16,7 +16,7 @@ module.exports = {
 					<li class="no-padding">
 						<WalletsDropdown />
 					</li>
-					<li><m.route.Link href="#!">Transactions</m.route.Link></li>
+					<li><m.route.Link href="/transactions">Transactions</m.route.Link></li>
 					<li><m.route.Link href="#!">Transfers   </m.route.Link></li>
 					<li><m.route.Link href="/categories">Categories</m.route.Link></li>
 					<li><m.route.Link href="#!">Overview    </m.route.Link></li>
