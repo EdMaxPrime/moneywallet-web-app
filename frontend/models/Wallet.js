@@ -2,6 +2,7 @@ const pb = require("../api")
 
 var Wallet = {
 	list: [],
+	byId: {},
 	loadList: function() {
 		return pb.collection('wallets').getFullList({
 			sort: 'index'
@@ -9,6 +10,9 @@ var Wallet = {
 			console.log("wallet response");
 			console.log(response);
 			Wallet.list = response;
+			response.forEach(wallet => {
+				Wallet.byId[ wallet["id"] ] = wallet;
+			})
 		})
 	},
 
@@ -24,6 +28,14 @@ var Wallet = {
 		Wallet.current.index = maxIndex + 1;
 
 		return pb.collection('wallets').create(Wallet.current);
+	},
+
+	/**
+	 * Given a string Id, get the wallet with this id, or undefined if
+	 * it doesn't exist.
+	 */
+	getById: function(id) {
+		return Wallet.byId[id];
 	},
 
 	/**

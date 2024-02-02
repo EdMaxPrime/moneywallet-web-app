@@ -4,6 +4,7 @@ var Category = {
 	income: [],
 	expense: [],
 	system: [],
+	byId: {},
 
 	loadList: function() {
 		return pb.collection('categories').getFullList({
@@ -13,6 +14,10 @@ var Category = {
 			Category.income = response.filter(category => category["type"] == 0);
 			Category.expense = response.filter(category => category["type"] == 1);
 			Category.system = response.filter(category => category["type"] == 2);
+			// quick lookup by ID
+			response.forEach(category => {
+				Category.byId[ category["id"] ] = category;
+			});
 
 			return response;
 		})
@@ -34,6 +39,14 @@ var Category = {
 			category.children = Category.getTree(categories, category["id"]);
 		}
 		return tree_level;
+	},
+
+	/**
+	 * Given a string Id, get the category with this id, or undefined if
+	 * it doesn't exist.
+	 */
+	getById: function(id) {
+		return Category.byId[id];
 	}
 };
 
