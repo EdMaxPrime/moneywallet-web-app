@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dayjs": "^1.11.10",
     "esbuild": "0.17.19",
     "mithril": "^2.2.2",
     "pocketbase": "^0.19.0"
