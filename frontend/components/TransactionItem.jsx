@@ -3,6 +3,8 @@ const Icon = require("./Icon.jsx")
 
 const Util = require("../models/index.js")
 
+const dayjs = require("dayjs")
+
 require("./TransactionItem.css")
 
 
@@ -19,7 +21,7 @@ module.exports = {
 
 				<p class="secondary-content">
 					<span class="red-text text-darken-1">{Util.formatTransactionAmount(t)}</span>
-					<p class="black-text">{t["date"]}</p>
+					<p class="black-text">{dayjs(t["date"]).format("ddd DD MMM YYYY")}</p>
 				</p>
 		</li>);
 	}
