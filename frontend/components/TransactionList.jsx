@@ -1,5 +1,8 @@
 const m = require("mithril")
 const TransactionItem = require("../components/TransactionItem")
+const MoneyAmount = require("./MoneyAmount.jsx")
+
+const Util = require("../models/index.js")
 
 const dayjs = require("dayjs");
 
@@ -37,21 +40,37 @@ const BucketSorter = function() {
 	this.byISO = {};
 
 	this.add = function(transaction) {
+		// get date
 		const startDateInstance = dayjs(transaction["date"]).startOf("week");
 		const endDateInstance = startDateInstance.endOf("week");
 		const key = startDateInstance.format();
+
+		// create or update bucket
 		if(!(key in this.byISO)) {
 			this.byISO[key] = {
 				key: key,
 				startDateInstance : startDateInstance,
 				endDateInstance : endDateInstance,
 				items : [],
+				sumByCurrency: {},
 			};
 		}
-		this.byISO[key].items.push(transaction);
+		let bucket = this.byISO[key];
+		bucket.items.push(transaction);
+
+		// running sum of total money spent, for each currency
+		const currencyId = Util.getCurrencyOfTransaction(transaction)["id"];
+		const moneyWithPositiveNegative = transaction["direction"]? -transaction["money"] : transaction["money"];
+		if(!(currencyId in bucket.sumByCurrency)) {
+			bucket.sumByCurrency[currencyId] = moneyWithPositiveNegative;
+		} else {
+			bucket.sumByCurrency[currencyId] += moneyWithPositiveNegative;
+		}
 	};
 
 	this.getBuckets = function() {
+		// get buckets as the values of associative array
+		// and sort buckets by date from latest to earliest
 		return Object.values(this.byISO).sort(function(a, b) {
 			if(a.startDateInstance.isBefore(b.startDateInstance)) {
 				return 1;
@@ -78,10 +97,15 @@ module.exports = {
 			<ul class="collection with-header">
 				{buckets.getBuckets().flatMap(bucket => (
 					[
-						<li class="collection-header" key={bucket.key}>
-							<h6>
+						<li class="collection-header row" key={bucket.key}>
+							<h6 class="col s6">
 								{formatBucketDates(bucket)}
 							</h6>
+							<div class="col s6 right-align">
+							{Object.entries(bucket.sumByCurrency).map(
+								([currencyId, sum]) => <MoneyAmount key={currencyId} direction={sum < 0} currencyId={currencyId} money={sum} />)
+							}
+							</div>
 						</li>
 					].concat(bucket.items.map(transaction => 
 						<TransactionItem t={transaction} key={transaction.id} />
