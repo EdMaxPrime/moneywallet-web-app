@@ -1,5 +1,6 @@
 const m = require("mithril")
 const Icon = require("./Icon.jsx")
+const MoneyAmount = require("./MoneyAmount.jsx")
 
 const Util = require("../models/index.js")
 
@@ -20,7 +21,9 @@ module.exports = {
 				<p>{t["description"]}</p>
 
 				<p class="secondary-content">
-					<span class="red-text text-darken-1">{Util.formatTransactionAmount(t)}</span>
+					<span class="red-text text-darken-1">
+						<MoneyAmount direction={t["direction"]} t={t} />
+					</span>
 					<p class="black-text">{dayjs(t["date"]).format("ddd DD MMM YYYY")}</p>
 				</p>
 		</li>);
