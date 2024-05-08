@@ -6,6 +6,11 @@ const Tree = require("../components/Tree.jsx")
 
 const Category = require("../models/Category")
 
+
+const linkToCategoryPage = function(category) {
+	return {href: "/category/" + category["id"]};
+}
+
 module.exports = (function() {
 	// state variable to control the tabs
 	let tabs = null;
@@ -25,13 +30,22 @@ module.exports = (function() {
 				<Layout title="Categories">
 					<Tabs labels={["Income", "Expense", "System"]}>
 						<div id="income-categories-tree" class="col s12">
-							<Tree nodes={Category.getTree(Category.income)} />
+							<Tree 
+								nodes={Category.getTree(Category.income)}
+								component={m.route.Link}
+								generateComponentAttributes={linkToCategoryPage} />
 						</div>
 						<div id="expense-categories-tree" class="col s12">
-							<Tree nodes={Category.getTree(Category.expense)} />
+							<Tree 
+								nodes={Category.getTree(Category.expense)}
+								component={m.route.Link}
+								generateComponentAttributes={linkToCategoryPage} />
 						</div>
 						<div id="system-categories-tree" class="col s12">
-							<Tree nodes={Category.getTree(Category.system)} />
+							<Tree 
+								nodes={Category.getTree(Category.system)}
+								component={m.route.Link}
+								generateComponentAttributes={linkToCategoryPage} />
 						</div>
 					</Tabs>
 				</Layout>
