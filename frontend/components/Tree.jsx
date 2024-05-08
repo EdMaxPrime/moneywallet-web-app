@@ -16,7 +16,6 @@ require("./Tree.css")
 // This must be declared as a variable so that the name can be used in recursion
 const Tree = {
 	view: function(vnode) {
-		console.log("[Category Tree.view()] nodes=", vnode.attrs.nodes);
 		const Component = vnode.attrs.component? vnode.attrs.component : "span";
 		const attrs = vnode.attrs.generateComponentAttributes? vnode.attrs.generateComponentAttributes : function() {return {};};
 		return (
