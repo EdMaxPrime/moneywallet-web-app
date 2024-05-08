@@ -13,6 +13,19 @@ var Transaction = {
 	},
 
 	/**
+	 * Retrieves transactions that belong to a set of categories
+	 * @param categories a list of strings, each is a category id
+	 */
+	getByCategory: function(categories) {
+		return pb.collection("transactions").getList(1, 30, {
+			filter: categories.map(category => "category = \"" + category + "\"").join(" || ")
+		}).then(response => {
+			console.log("Succesful transactions fetch for category ", categories, response);
+			return response.items;
+		})
+	},
+
+	/**
 	 * Helper function to add lists
 	 */
 	append: function(transaction_list) {
