@@ -81,6 +81,10 @@ const BucketSorter = function() {
 	};
 }
 
+/**
+ * Attributes:
+ * transactions = a list of Transaction model items. It can be an empty list but it should not be undefined
+ */
 module.exports = {
 	view: function(vnode) {
 		// first, group the transactions by time period
