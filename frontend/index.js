@@ -10,6 +10,7 @@ const Login = require("./pages/login.jsx")
 const Logout = require("./pages/logout.jsx")
 const CreateWallet = require("./pages/create_wallet.jsx")
 const Categories = require("./pages/categories.jsx")
+const CategoryView = require("./pages/category_view.jsx")
 
 const pb = require("./api");
 
@@ -37,6 +38,7 @@ m.route(document.body, "/register", {
 	"/transactions": loginRequired(Transactions),
 	"/wallets/create": loginRequired(CreateWallet),
 	"/categories": loginRequired(Categories),
+	"/category/:id": loginRequired(CategoryView),
 	"/register": Register,
 	"/login": Login,
 	"/logout": loginRequired(Logout),
