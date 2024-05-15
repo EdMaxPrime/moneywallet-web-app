@@ -27,6 +27,14 @@ var Currency = {
 		return Currency.byId[id];
 	},
 
+	/**
+	 * Find a currency by the 3 letter ISO name, returns null if it doesn't exist
+	 */
+	getByISO: function(iso) {
+		const currencies = Currency.list.filter(currency => currency["iso"] == iso);
+		return currencies.length > 0 ? currencies[0] : null;
+	},
+
 	current: {
 		iso: "",
 		name: "",

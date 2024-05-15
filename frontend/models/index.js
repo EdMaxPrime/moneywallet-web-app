@@ -23,11 +23,11 @@ module.exports = {
 	 * be loaded.
 	 * @param money  a positive integer, not premultiplied by the currency's 
 	 * cents/dollars system
-	 * @param currencyId  the string id of the currency
+	 * @param currencyId  the string id of the currency, or the Currency object
 	 * @return  string
 	 */
 	formatMoneyAmount: function(money, currencyId) {
-		const currency = Currency.getById(currencyId);
+		const currency = typeof currencyId == "string" ? Currency.getById(currencyId) : currencyId;
 		let amount = (typeof money == "number")? money.toString() : money;
 		amount = amount.padStart(currency["decimals"] + 1, "0"); // pad with leading zeroes
 		return currency["symbol"] + 

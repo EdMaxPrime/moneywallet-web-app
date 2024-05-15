@@ -17,9 +17,9 @@ module.exports = {
 						<WalletsDropdown />
 					</li>
 					<li><m.route.Link href="/transactions">Transactions</m.route.Link></li>
-					<li><m.route.Link href="#!">Transfers   </m.route.Link></li>
+					<li><m.route.Link href="#!">Transfers</m.route.Link></li>
 					<li><m.route.Link href="/categories">Categories</m.route.Link></li>
-					<li><m.route.Link href="#!">Overview    </m.route.Link></li>
+					<li><m.route.Link href="/overview">Overview</m.route.Link></li>
 				</ul>
 				<div class="container"><a href="#" data-target="sidenav" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
 			</header>), (
