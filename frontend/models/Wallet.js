@@ -6,14 +6,15 @@ var Wallet = {
 	loadList: function() {
 		return pb.collection('wallets').getFullList({
 			sort: 'index'
-		}).then(function (response) {
-			console.log("wallet response");
-			console.log(response);
-			Wallet.list = response;
-			response.forEach(wallet => {
-				Wallet.byId[ wallet["id"] ] = wallet;
-			})
-		})
+		}).then(Wallet.loadListHelper)
+	},
+
+	loadListHelper: function(wallets_list) {
+		Wallet.list = wallets_list;
+		wallets_list.forEach(wallet => {
+			Wallet.byId[ wallet["id"] ] = wallet;
+		});
+		return wallets_list;
 	},
 
 	create: function() {

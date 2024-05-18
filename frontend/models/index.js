@@ -1,3 +1,4 @@
+const pb = require("../api.js")
 const Category = require("./Category.js")
 const Currency = require("./Currency.js")
 const Transaction = require("./Transaction.js")
@@ -42,6 +43,40 @@ module.exports = {
 	 */
 	formatTransactionAmount: function(transaction) {
 		return this.formatMoneyAmount(transaction["money"], Wallet.getById(transaction["wallet"])["currency"]);
+	},
+
+	parentEntitiesLoaded: false,
+	loadParentEntities: function() {
+		let callback = (function(data) {
+			this.parentEntitiesLoaded = true;
+
+			Category.loadListHelper(data.expand.categories_via_user_owner);
+			// get list of currencies, without duplicates (unique id), from child entity of wallet ("expand")
+			const currencyIds = {};
+			const currencies = [];
+			data.expand.wallets_via_user_owner.forEach(wallet => {
+				if(!currencyIds.hasOwnProperty(wallet.expand.currency.id)) {
+					currencies.push(wallet.expand.currency);
+					currencyIds[wallet.expand.currency.id] = true;
+				}
+			}); 
+			Currency.loadListHelper(currencies);
+			Wallet.loadListHelper(data.expand.wallets_via_user_owner);
+
+			return data;
+		}).bind(this);
+
+		if(this.parentEntitiesLoaded) {
+			return Promise.resolve(true); // if we already loaded the data, then immediately return an auto-resolving Promise
+		}
+
+		return pb.collection("users").getOne(pb.authStore.model.id, {
+			expand: "wallets_via_user_owner.currency,categories_via_user_owner",
+		}).then(callback)
+		.catch(function(error) {
+			console.log("Load parent entities", error);
+			return error;
+		})
 	},
 
 };

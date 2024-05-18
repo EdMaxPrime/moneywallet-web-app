@@ -9,18 +9,20 @@ var Category = {
 	loadList: function() {
 		return pb.collection('categories').getFullList({
 			sort: 'index'
-		}).then(function(response) {
-			// reset state and sort the categories into types
-			Category.income = response.filter(category => category["type"] == 0);
-			Category.expense = response.filter(category => category["type"] == 1);
-			Category.system = response.filter(category => category["type"] == 2);
-			// quick lookup by ID
-			response.forEach(category => {
-				Category.byId[ category["id"] ] = category;
-			});
+		}).then(Category.loadListHelper)
+	},
 
-			return response;
-		})
+	loadListHelper: function(categories_list) {
+		// reset state and sort the categories into types
+		Category.income = categories_list.filter(category => category["type"] == 0);
+		Category.expense = categories_list.filter(category => category["type"] == 1);
+		Category.system = categories_list.filter(category => category["type"] == 2);
+		// quick lookup by ID
+		categories_list.forEach(category => {
+			Category.byId[ category["id"] ] = category;
+		});
+
+		return categories_list;
 	},
 
 	/**

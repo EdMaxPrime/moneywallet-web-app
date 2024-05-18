@@ -6,17 +6,19 @@ var Currency = {
 	loadList: function() {
 		return pb.collection('currencies').getFullList({
 			sort: 'iso'
-		}).then(function (response) {
-			console.log("currency response");
-			console.log(response);
-			Currency.list = response;
-			response.forEach(currency => {
-				Currency.byId[ currency["id"] ] = currency;
-			})
-		}).catch(function (error) {
+		}).then(Currency.loadListHelper)
+		.catch(function (error) {
 			console.log("currency error");
 			console.log(error);
 		})
+	},
+
+	loadListHelper: function (currencies_list) {
+		Currency.list = currencies_list;
+		currencies_list.forEach(currency => {
+			Currency.byId[ currency["id"] ] = currency;
+		});
+		return currencies_list;
 	},
 
 	/**
