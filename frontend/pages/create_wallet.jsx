@@ -1,5 +1,4 @@
 const m = require("mithril")
-const Layout = require("../layouts/Layout")
 const Icon = require("../components/Icon.jsx")
 
 const Wallet = require("../models/Wallet")
@@ -25,7 +24,6 @@ module.exports = (function() {
 		},
 		view: function() {
 			return (
-			<Layout title="Create Wallet">
 				<div class="container">
 					<p class="section">Wallets can represent a credit card, a bank account, a gift card, or cash in your physical wallet. To create a new wallet, just give it a name. Click the <em>add wallet</em> button to save it.</p>
 					<form class="row" onsubmit={function(e) {
@@ -108,7 +106,7 @@ module.exports = (function() {
 						<button class="btn" type="submit">Add wallet&nbsp;<i class="material-icons right">add</i></button>
 					</form>
 				</div>
-			</Layout>);
+			);
 	}
 	};
 })();

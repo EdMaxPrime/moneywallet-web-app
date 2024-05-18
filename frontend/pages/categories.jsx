@@ -1,5 +1,4 @@
 const m = require("mithril")
-const Layout = require("../layouts/Layout")
 const Icon = require("../components/Icon.jsx")
 const Tabs = require("../components/Tabs.jsx")
 const Tree = require("../components/Tree.jsx")
@@ -27,7 +26,6 @@ module.exports = (function() {
 		},
 		view: function() {
 			return (
-				<Layout title="Categories">
 					<Tabs labels={["Income", "Expense", "System"]}>
 						<div id="income-categories-tree" class="col s12">
 							<Tree 
@@ -48,7 +46,6 @@ module.exports = (function() {
 								generateComponentAttributes={linkToCategoryPage} />
 						</div>
 					</Tabs>
-				</Layout>
 			);
 		}
 	};

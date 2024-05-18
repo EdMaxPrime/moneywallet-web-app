@@ -1,6 +1,5 @@
 const m = require("mithril")
 const HighchartsContainer = require("../components/HighchartsContainer")
-const Layout = require("../layouts/Layout")
 
 const Currency = require("../models/Currency")
 const Report = require("../models/Report")
@@ -100,14 +99,15 @@ module.exports = function() {
 		return Report.getNetWorth(wallets)
 		.then(function(data) {
 			status = READY;
-			// get all currency IDs in response
-			const currenciesSet = new Set(data.map(row => Wallet.getById(row.wallets).currency));
+			// get all currencies in response
+			const currenciesSet = new Set(data.map(row => 
+				Wallet.getById(row.wallets).expand.currency
+			));
 			// insert data into chart
 			netWorthOptions.yAxis = [];
 			netWorthOptions.series = [];
 			let currencyIterator = 0; //integer that increments with each loop iteration
-			currenciesSet.forEach(currencyId => {
-				const currency = Currency.getById(currencyId);
+			currenciesSet.forEach(currency => {
 				// generate yAxis array based on currencies
 				netWorthOptions.yAxis.push({
 					title: {
@@ -115,7 +115,7 @@ module.exports = function() {
 					},
 					labels: {
 						formatter: function() {
-							return Util.formatMoneyAmount(Math.abs(this.value), currencyId);
+							return Util.formatMoneyAmount(Math.abs(this.value), currency);
 						}
 					},
 					opposite: currencyIterator % 2 == 1 // switch left and right sides on every other currency
@@ -124,7 +124,7 @@ module.exports = function() {
 				netWorthOptions.series.push({
 					name: currency.iso, //name is ISO to allow for tooltip formatting to know the currency
 					yAxis: currencyIterator,
-					data: data.filter(row => Wallet.getById(row.wallets).currency == currencyId)
+					data: data.filter(row => Wallet.getById(row.wallets).currency == currency.id)
 						.map(row => [dayjs(row.date, "YYYY-MM-DD").valueOf(), row.balance])
 				})
 				currencyIterator++;
@@ -152,15 +152,15 @@ module.exports = function() {
 		},
 		view: function(vnode) {
 			if(status == WAITING_FIRST) {
-				return (<Layout title="Overview">Loading...</Layout>);
+				return m("span", "Loading...");
 			}
 			else if(status == ERROR) {
-				return (<Layout title="Overview">Error</Layout>);
+				return m("span", "Error");
 			}
 
-			return (<Layout title="Overview">
+			return (
 				<HighchartsContainer chartOptions={netWorthOptions} chartCreatedCallback={extendNetWorthChart} />
-			</Layout>);
+			);
 		}
 	};
 }

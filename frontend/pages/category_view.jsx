@@ -1,5 +1,4 @@
 const m = require("mithril")
-const Layout = require("../layouts/Layout")
 const TransactionListPageable = require("../components/TransactionListPageable")
 
 const Category = require("../models/Category")
@@ -10,7 +9,7 @@ module.exports = {
 		const category = Category.getById(vnode.attrs.id);
 
 		return (
-			<Layout title={category.name}>
+			<div>
 				<div class="container">
 					<p>
 						<label>
@@ -26,7 +25,7 @@ module.exports = {
 					</p>
 				</div>
 				<TransactionListPageable fetch={Transaction.getByCategory} arg={[vnode.attrs.id]} />
-			</Layout>
+			</div>
 		);
 	}
 };
