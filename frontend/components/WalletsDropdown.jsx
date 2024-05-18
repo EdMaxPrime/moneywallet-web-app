@@ -6,9 +6,6 @@ module.exports = (function() {
 	let collapsible = null;
 
 	return {
-		oninit: function() {
-			Wallet.loadList().then(function() {m.redraw();});
-		},
 		oncreate: function(vnode) {
 			collapsible = M.Collapsible.init(vnode.dom, {
 				onCloseStart: function() {
@@ -40,4 +37,4 @@ module.exports = (function() {
 		},
 	};
 
-})();
+});
