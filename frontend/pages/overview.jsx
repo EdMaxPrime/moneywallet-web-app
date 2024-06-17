@@ -101,7 +101,7 @@ module.exports = function() {
 			status = READY;
 			// get all currencies in response
 			const currenciesSet = new Set(data.map(row => 
-				Wallet.getById(row.wallets).expand.currency
+				Wallet.getById(row.wallets).currency
 			));
 			// insert data into chart
 			netWorthOptions.yAxis = [];
@@ -111,21 +111,31 @@ module.exports = function() {
 				// generate yAxis array based on currencies
 				netWorthOptions.yAxis.push({
 					title: {
-						text: currency.name
+						text: Currency.getById(currency).name
 					},
 					labels: {
 						formatter: function() {
-							return Util.formatMoneyAmount(Math.abs(this.value), currency);
+							return Util.formatMoneyAmount(Math.abs(this.value), Currency.getById(currency));
 						}
 					},
 					opposite: currencyIterator % 2 == 1 // switch left and right sides on every other currency
 				});
 				// for each series, determined by list of currency IDs, assign the right yAxis
 				netWorthOptions.series.push({
-					name: currency.iso, //name is ISO to allow for tooltip formatting to know the currency
+					name: Currency.getById(currency).iso, //name is ISO to allow for tooltip formatting to know the currency
 					yAxis: currencyIterator,
-					data: data.filter(row => Wallet.getById(row.wallets).currency == currency.id)
-						.map(row => [dayjs(row.date, "YYYY-MM-DD").valueOf(), row.balance])
+					data: data.filter(row => Wallet.getById(row.wallets).currency == currency)
+						.reduce(
+							(accumulator, row) => {
+								const rowDate = dayjs(row.date, "YYYY-MM-DD").valueOf();
+								if(accumulator.length == 0 || accumulator[accumulator.length-1][0] != rowDate) {
+									accumulator.push([rowDate, row.balance]);
+								} else {
+									accumulator[accumulator.length-1][1] += row.balance;
+								}
+								return accumulator;
+							},
+							[])
 				})
 				currencyIterator++;
 			});
