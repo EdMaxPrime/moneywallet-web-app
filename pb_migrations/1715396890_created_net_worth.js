@@ -78,7 +78,7 @@ migrate((db) => {
     "updateRule": null,
     "deleteRule": null,
     "options": {
-      "query": "SELECT\n    (ROW_NUMBER() OVER()) as id,\n    date(transactions.`date`, 'start of month') AS `date`,\n    wallets.user_owner AS `users`,\n    wallets.id AS `wallets`,\n    SUM(CASE WHEN transactions.direction = 0 THEN transactions.money ELSE -transactions.money END) AS `cashflow`,\n    ((SUM(CASE WHEN transactions.direction = 0 THEN transactions.money ELSE -transactions.money END) OVER (ORDER BY `date` ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)) + wallets.start_money) AS `balance`\n  FROM transactions\n  JOIN wallets ON wallets.id = transactions.wallet\n  GROUP BY date(transactions.`date`, 'start of month'), wallets.id\n  ORDER BY date(transactions.`date`, 'start of month') ASC"
+      "query": "SELECT\n    (ROW_NUMBER() OVER()) as id,\n    date(transactions.`date`, 'start of month') AS `date`,\n    wallets.user_owner AS `users`,\n    wallets.id AS `wallets`,\n    SUM(CASE WHEN transactions.direction = 1 THEN transactions.money ELSE -transactions.money END) AS `cashflow`,\n    ((SUM(CASE WHEN transactions.direction = 1 THEN transactions.money ELSE -transactions.money END) OVER (ORDER BY `date` ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)) + wallets.start_money) AS `balance`\n  FROM transactions\n  JOIN wallets ON wallets.id = transactions.wallet\n  GROUP BY date(transactions.`date`, 'start of month'), wallets.id\n  ORDER BY date(transactions.`date`, 'start of month') ASC"
     }
   });
 
