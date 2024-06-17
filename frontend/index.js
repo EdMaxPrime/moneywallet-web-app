@@ -7,6 +7,7 @@ const m = require("mithril")
 const Categories = require("./pages/categories.jsx")
 const CategoryView = require("./pages/category_view.jsx")
 const CreateWallet = require("./pages/create_wallet.jsx")
+const JsonImport = require("./pages/import.jsx")
 const Layout = require("./layouts/Layout.jsx")
 const Login = require("./pages/login.jsx")
 const Logout = require("./pages/logout.jsx")
@@ -74,6 +75,7 @@ m.route(document.body, "/register", {
 	"/categories": loginAndDataRequired(Categories, "Categories"),
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
 	"/overview": loginAndDataRequired(Overview, "Overview"),
+	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/register": Register,
 	"/login": Login,
 	"/logout": loginRequired(Logout),
