@@ -60,7 +60,7 @@ const BucketSorter = function() {
 
 		// running sum of total money spent, for each currency
 		const currencyId = Util.getCurrencyOfTransaction(transaction)["id"];
-		const moneyWithPositiveNegative = transaction["direction"]? -transaction["money"] : transaction["money"];
+		const moneyWithPositiveNegative = transaction["direction"] == 0? -transaction["money"] : transaction["money"];
 		if(!(currencyId in bucket.sumByCurrency)) {
 			bucket.sumByCurrency[currencyId] = moneyWithPositiveNegative;
 		} else {
@@ -107,7 +107,7 @@ module.exports = {
 							</h6>
 							<div class="col s6 right-align">
 							{Object.entries(bucket.sumByCurrency).map(
-								([currencyId, sum]) => <MoneyAmount key={currencyId} direction={sum < 0} currencyId={currencyId} money={sum} />)
+								([currencyId, sum]) => <MoneyAmount key={currencyId} direction={sum >= 0} currencyId={currencyId} money={sum} />)
 							}
 							</div>
 						</li>

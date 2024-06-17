@@ -18,7 +18,7 @@ module.exports = {
 	view: function(vnode) {
 		return m("span", 
 			{
-				className: vnode.attrs.direction == 1? "red-text text-darken-1" : "cyan-text text-darken-4",
+				className: vnode.attrs.direction == 0? "red-text text-darken-1" : "cyan-text text-darken-4",
 			},
 			("t" in vnode.attrs)? Util.formatTransactionAmount(vnode.attrs.t) : Util.formatMoneyAmount(vnode.attrs.money, vnode.attrs.currencyId)
 		);
