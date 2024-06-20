@@ -34,7 +34,8 @@ var Category = {
 	getTree: function(categories, parent = "") {
 		// given a parent_id
 		// filter all categories with that parent_id -> this level of tree
-		let tree_level = categories.filter(category => category["parent"] == parent);
+		let tree_level = categories.filter(category => category["parent"] == parent)
+			.sort((a, b) => a.name.localeCompare(b.name));
 		// for each category in this level of tree
 		for(let category of tree_level) {
 			// category.children = recursive(parent_id = category.id, categories_list)
