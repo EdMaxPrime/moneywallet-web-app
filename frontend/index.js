@@ -63,7 +63,7 @@ function loginAndDataRequired(page, title) {
 		render: function(vnode) { //vnode.attrs is route parameters from the url
 			return m(Layout, {
 				"title": typeof title == "function"? title(vnode.attrs) : title
-			}, m(page));
+			}, m(page, vnode.attrs));
 		}
 	};
 }
