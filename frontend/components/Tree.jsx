@@ -23,7 +23,7 @@ const Tree = {
 				{vnode.attrs.nodes.map(category => (
 					<li>
 						<Component {...attrs(category)}>
-							<Icon icon={{type: "color", name: "FA", color: "orange"}} />
+							<Icon icon={category.icon} />
 							{category.name}
 						</Component>
 						{category.children.length > 0 && <Tree nodes={category.children} component={vnode.attrs.component} generateComponentAttributes={vnode.attrs.generateComponentAttributes} />}
