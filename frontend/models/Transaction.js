@@ -20,7 +20,6 @@ var Transaction = {
 		return pb.collection("transactions").getList(1, 30, {
 			filter: categories.map(category => "category = \"" + category + "\"").join(" || ")
 		}).then(response => {
-			console.log("Succesful transactions fetch for category ", categories, response);
 			return response.items;
 		})
 	},
