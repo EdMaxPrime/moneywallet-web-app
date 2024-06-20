@@ -28,9 +28,12 @@ module.exports = {
 
 		// Icon
 		if(vnode.attrs.icon.type == "resource") {
-			return m("i", {
-				className: className + "material-icons teal"
-			}, vnode.attrs.icon.resource);
+			return m("img", {
+				src: "/img/" + vnode.attrs.icon.resource + ".svg",
+				alt: vnode.attrs.icon.resource,
+				title: vnode.attrs.icon.resource,
+				className: className,
+			});
 		} 
 		// Letters
 		else {
