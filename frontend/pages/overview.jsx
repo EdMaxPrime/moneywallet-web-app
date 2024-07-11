@@ -6,13 +6,7 @@ const Report = require("../models/Report")
 const Util = require("../models/index")
 const Wallet = require("../models/Wallet")
 
-const dayjs = require("dayjs")
-const customParseFormat = require("dayjs/plugin/customParseFormat")
-dayjs.extend(customParseFormat); //plugin to parse non-ISO formats from API endpoint, for converting string dates to Highcharts Unix timestamp
-const isBetween = require("dayjs/plugin/isBetween")
-dayjs.extend(isBetween); //plugin to compare dates for the filter
-const quarterOfYear = require("dayjs/plugin/quarterOfYear");
-dayjs.extend(quarterOfYear);
+const dayjs = require("../dayjs-lib")
 
 
 
@@ -29,15 +23,16 @@ module.exports = function() {
 	let categories = []; // only include transactions from these categories
 	let wallets = "Total"; // only include transactions for this wallet
 
-	// data for net worth chart
-	let netWorthData = [];
-
 	// true for 1 render cycle when data is updated due to filters
 	let allowChartUpdate = false;
 
 	// async fetch status
 	let status = WAITING_FIRST;
 
+	// data for net worth chart
+	let netWorthData = [];
+
+	// configuration for the Net Worth chart
 	const netWorthOptions = {
 		chart: {
 			type: "area",
@@ -164,28 +159,55 @@ module.exports = function() {
 	 */
 	const applyFilters = function() {
 		for(let i = 0; i < netWorthOptions.series.length; i++) {
-			// filter data to ensure each series has the correct currency, and
-			// the date is between the start and end boundaries (inclusive)
-			netWorthOptions.series[i].data = netWorthData
-				.filter(row => 
-					Wallet.getById(row.wallets).expand.currency.iso == netWorthOptions.series[i].name
-					&& dayjs(row.date, "YYYY-MM-DD").isBetween(startDate, endDate, "day", "[]")
-				)
-			// reduce/combine data to the grouping interval (ex: days -> months
-			// by only including a point for the first day of the month)
-				.reduce(
-					(accumulator, row) => {
-						let rowDate = dayjs(row.date, "YYYY-MM-DD");
-						if(grouping == "month" || grouping == "quarter" || grouping == "year") {
-							rowDate = rowDate.startOf(grouping).valueOf();
-						}
-						if(accumulator.length == 0 || accumulator[accumulator.length-1][0] != rowDate) {
-							accumulator.push([rowDate, row.balance]);
-						}
-						return accumulator;
-					},
-					[]
-				);
+			/*
+			assume list is sorted by date
+			for each series/currency:
+				get list of included wallets
+				balances = dictionary where keys are wallets and values are balances, initially wallet.startBalance
+				for each group:
+					for each wallet:
+						balances.wallet = data.findLatest(groupDayStart, groupDayEnd, wallet).balance
+						if not found, do nothing, keep past data
+					add Highcharts point with x=startOf(group), y=sum(balances)
+			*/
+			// this is a Map where keys are wallet.id and values are balances
+			walletBalances = {};
+			// build above Map by finding wallets included in the report and 
+			// using this series' currency
+			for(let walletIndex = 0; walletIndex < Wallet.list.length; walletIndex++) {
+				if(Wallet.list[walletIndex].expand.currency.iso == netWorthOptions.series[i].name) {
+					walletBalances[ Wallet.list[walletIndex].id ] = Wallet.list[walletIndex].start_money;
+				}
+			}
+
+			// delete previous points
+			netWorthOptions.series[i].data = [];
+
+			// for each group (loop through groups to avoid missing days that have no data)
+			let dataIndex = 0;
+			for(let groupIterator = startDate.startOf(grouping); groupIterator.isBetween(startDate, endDate, "day", "[]"); groupIterator = groupIterator.add(1, grouping)) {
+				const groupEnd = groupIterator.endOf(grouping);
+				
+				while(dataIndex < netWorthData.length) {
+					if(groupIterator.isBefore(netWorthData[dataIndex].date, "day")) { // no more data to add to point for this group
+						break;
+					}
+					// replace latest data in point
+					if(!groupEnd.isBefore(netWorthData[dataIndex].date, "day") && netWorthData[dataIndex].wallets in walletBalances) {
+						walletBalances[ netWorthData[dataIndex].wallets ] = netWorthData[dataIndex].balance;
+					}
+					dataIndex++;
+				}
+
+				// calculate point's Y value as sum of wallet balances
+				let pointValue = 0;
+				for(walletId in walletBalances) {
+					pointValue += walletBalances[walletId];
+				}
+
+				// add Highcharts point
+				netWorthOptions.series[i].data.push([groupIterator.valueOf(), pointValue]);
+			}
 		}
 	}
 
@@ -222,7 +244,7 @@ module.exports = function() {
 							<select class="browser-default" value={grouping} onchange={e => {grouping = e.target.value}}>
 								<option value="day">Day</option>
 								<option value="week">Week</option>
-								<option value="biweekly">Biweekly (every 2 weeks)</option>
+								<option value="biweekly">Biweekly (2 week periods)</option>
 								<option value="month">Month</option>
 								<option value="quarter">Quarter</option>
 								<option value="year">Year</option>
