@@ -2,7 +2,7 @@ const m = require("mithril")
 
 const pb = require("../api")
 
-const dayjs = require("dayjs")
+const dayjs = require("../dayjs-lib")
 
 
 const CLEAR = 0, WAITING = 1, LOADED = 2, ERROR = 3;

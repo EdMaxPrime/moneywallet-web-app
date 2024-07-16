@@ -4,7 +4,7 @@ const MoneyAmount = require("./MoneyAmount.jsx")
 
 const Util = require("../models/index.js")
 
-const dayjs = require("dayjs")
+const dayjs = require("../dayjs-lib")
 
 require("./TransactionItem.css")
 

@@ -185,9 +185,11 @@ module.exports = function() {
 
 			// for each group (loop through groups to avoid missing days that have no data)
 			let dataIndex = 0;
-			for(let groupIterator = startDate.startOf(grouping); groupIterator.isBetween(startDate, endDate, "day", "[]"); groupIterator = groupIterator.add(1, grouping)) {
-				const groupEnd = groupIterator.endOf(grouping);
+			for(let groupIterator = startDate.mwStartOf(grouping); groupIterator.isBefore(endDate.mwEndOf(grouping)); grouping == "biweekly"? groupIterator = groupIterator.add(2, "week") : groupIterator = groupIterator.add(1, grouping)) {
+				// all transactions in this group are between groupIterator and groupEnd
+				const groupEnd = groupIterator.mwEndOf(grouping);
 				
+				// loop through all netWorth data (one row per day)
 				while(dataIndex < netWorthData.length) {
 					if(groupIterator.isBefore(netWorthData[dataIndex].date, "day")) { // no more data to add to point for this group
 						break;
@@ -196,6 +198,7 @@ module.exports = function() {
 					if(!groupEnd.isBefore(netWorthData[dataIndex].date, "day") && netWorthData[dataIndex].wallets in walletBalances) {
 						walletBalances[ netWorthData[dataIndex].wallets ] = netWorthData[dataIndex].balance;
 					}
+					// this also has the effect of skipping past rows before the startDate
 					dataIndex++;
 				}
 
