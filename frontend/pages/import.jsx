@@ -30,8 +30,6 @@ module.exports = function() {
 		.then(response => {
 			status = LOADED;
 			json_import_response = response;
-			json_import_response.results.wallets.errors = ['Error adding wallet "Test" with date 2024-04-04','Error adding wallet "Test" with date 2024-04-04' ];
-			json_import_response.results.wallets.success--;
 			json_import_response.duration = dayjs().diff(startTime, "second");
 		})
 		.catch(error => {
@@ -92,6 +90,48 @@ module.exports = function() {
 						</li>
 						<li class="collection-item">
 							<i class="material-icons green-text">check_circle</i> Imported {json_import_response.results.categories.success} of {json_import_response.results.categories.total} categories
+						</li>
+						<li class="collection-item">
+							{json_import_response.results.events.success == json_import_response.results.events.total?
+							(<i class="material-icons green-text">check_circle</i>) :
+							(<i class="material-icons amber-text">warning</i>)
+							}
+
+							Imported {json_import_response.results.events.success} of {json_import_response.results.events.total} events
+
+							{json_import_response.results.events.errors.length > 0 &&
+							<ul class="collection">
+								{json_import_response.results.events.errors.map(error => (<li class="collection-item">{error}</li>))}
+							</ul>
+							}
+						</li>
+						<li class="collection-item">
+							{json_import_response.results.places.success == json_import_response.results.places.total?
+							(<i class="material-icons green-text">check_circle</i>) :
+							(<i class="material-icons amber-text">warning</i>)
+							}
+
+							Imported {json_import_response.results.places.success} of {json_import_response.results.places.total} places
+
+							{json_import_response.results.places.errors.length > 0 &&
+							<ul class="collection">
+								{json_import_response.results.places.errors.map(error => (<li class="collection-item">{error}</li>))}
+							</ul>
+							}
+						</li>
+						<li class="collection-item">
+							{json_import_response.results.people.success == json_import_response.results.people.total?
+							(<i class="material-icons green-text">check_circle</i>) :
+							(<i class="material-icons amber-text">warning</i>)
+							}
+
+							Imported {json_import_response.results.people.success} of {json_import_response.results.people.total} people
+
+							{json_import_response.results.people.errors.length > 0 &&
+							<ul class="collection">
+								{json_import_response.results.people.errors.map(error => (<li class="collection-item">{error}</li>))}
+							</ul>
+							}
 						</li>
 						<li class="collection-item">
 							<i class="material-icons green-text">check_circle</i> Imported {json_import_response.results.transactions.success} of {json_import_response.results.transactions.total} transactions
