@@ -32,6 +32,21 @@ routerAdd("POST", "/json-upload", (c) => {
 			"success": 0,
 			"errors": []
 		},
+		"events": {
+			"total": 0,
+			"success": 0,
+			"errors": []
+		},
+		"places": {
+			"total": 0,
+			"success": 0,
+			"errors": []
+		},
+		"people": {
+			"total": 0,
+			"success": 0,
+			"errors": []
+		},
 		"transactions": {
 			"total": 0,
 			"success": 0,
@@ -137,9 +152,119 @@ routerAdd("POST", "/json-upload", (c) => {
 			}
 		}
 
+		// create events
+		if(jsonContents.events && jsonContents.events.length > 0) {
+			results.events.total = jsonContents.events.length;
+			const eventsCollection = $app.dao().findCollectionByNameOrId("events");
+			const existingEvents = $app.dao().findRecordsByExpr("events", 
+				$dbx.hashExp({"user_owner": requestInfo.authRecord.id}));
+			for(let i = 0; i < jsonContents.events.length; i++) {
+				// find an existing event with this uuid, otherwise create new one
+				let record = existingEvents.filter(
+					event => event.getString("uuid") == jsonContents.events[i].id);
+				if(record.length == 0) {
+					record = new Record(eventsCollection);
+				} else {
+					record = record[0];
+				}
+				const form = new RecordUpsertForm($app, record);
+				// try
+				try {
+					form.loadData({
+						"end_date" : jsonContents.events[i].end_date,
+						"icon" : jsonContents.events[i].icon,
+						"name" : jsonContents.events[i].name,
+						"note" : jsonContents.events[i].note,
+						"start_date" : jsonContents.events[i].start_date,
+						"user_owner" : requestInfo.authRecord.getString("id"),
+						"uuid" : jsonContents.events[i].id,
+					});
+					form.submit();
+					jsonUUIDToPocketbaseId[jsonContents.events[i].id] = record.getId(); // associate old ID with new one
+					results.events.success++; // if you reach this line, then everything succeeded
+				} catch (findException) {
+					console.error(findException);
+					results.events.errors.push("Could not create event \"" + jsonContents.events[i].name + "\"");
+				}
+			}
+		}
+
+		// create places
+		if(jsonContents.places && jsonContents.places.length > 0) {
+			results.places.total = jsonContents.places.length;
+			const placesCollection = $app.dao().findCollectionByNameOrId("places");
+			const existingPlaces = $app.dao().findRecordsByExpr("places", 
+				$dbx.hashExp({"user_owner": requestInfo.authRecord.id}));
+			for(let i = 0; i < jsonContents.places.length; i++) {
+				// find an existing place with this uuid, otherwise create new one
+				let record = existingPlaces.filter(
+					place => place.getString("uuid") == jsonContents.places[i].id);
+				if(record.length == 0) {
+					record = new Record(placesCollection);
+				} else {
+					record = record[0];
+				}
+				const form = new RecordUpsertForm($app, record);
+				// try
+				try {
+					form.loadData({
+						"address" : jsonContents.places[i].address,
+						"icon" : jsonContents.places[i].icon,
+						"name" : jsonContents.places[i].name,
+						"latitude" : jsonContents.places[i].latitude,
+						"longitude" : jsonContents.places[i].longitude,
+						"user_owner" : requestInfo.authRecord.getString("id"),
+						"uuid" : jsonContents.places[i].id,
+					});
+					form.submit();
+					jsonUUIDToPocketbaseId[jsonContents.places[i].id] = record.getId(); // associate old ID with new one
+					results.places.success++; // if you reach this line, then everything succeeded
+				} catch (findException) {
+					console.error(findException);
+					results.places.errors.push("Could not create place \"" + jsonContents.places[i].name + "\"");
+				}
+			}
+		}
+
+		// create people
+		if(jsonContents.people && jsonContents.people.length > 0) {
+			results.people.total = jsonContents.people.length;
+			const peopleCollection = $app.dao().findCollectionByNameOrId("people");
+			const existingPeople = $app.dao().findRecordsByExpr("people", 
+				$dbx.hashExp({"user_owner": requestInfo.authRecord.id}));
+			for(let i = 0; i < jsonContents.people.length; i++) {
+				// find an existing people with this uuid, otherwise create new one
+				let record = existingPeople.filter(
+					people => people.getString("uuid") == jsonContents.people[i].id);
+				if(record.length == 0) {
+					record = new Record(peopleCollection);
+				} else {
+					record = record[0];
+				}
+				const form = new RecordUpsertForm($app, record);
+				// try
+				try {
+					form.loadData({
+						"icon" : jsonContents.people[i].icon,
+						"name" : jsonContents.people[i].name,
+						"note" : jsonContents.people[i].note,
+						"user_owner" : requestInfo.authRecord.getString("id"),
+						"uuid" : jsonContents.people[i].id,
+					});
+					form.submit();
+					jsonUUIDToPocketbaseId[jsonContents.people[i].id] = record.getId(); // associate old ID with new one
+					results.people.success++; // if you reach this line, then everything succeeded
+				} catch (findException) {
+					console.error(findException);
+					results.people.errors.push("Could not create person \"" + jsonContents.people[i].name + "\"");
+				}
+			}
+		}
+
 		// create transactions
 		if(jsonContents.transactions && jsonContents.transactions.length > 0) {
 			results.transactions.total = jsonContents.transactions.length;
+			const transaction_people = jsonContents.transaction_people || [];
 			const transactionCollection = $app.dao().findCollectionByNameOrId("transactions");
 			const existingTransactions = $app.dao().findRecordsByFilter(
 				"transactions",                      // collection
@@ -166,10 +291,13 @@ routerAdd("POST", "/json-upload", (c) => {
 						"count_in_total" : jsonContents.transactions[i].count_in_total,
 						"date" : jsonContents.transactions[i].date,
 						"description" : jsonContents.transactions[i].description,
+						"event" : ("event" in jsonContents.transactions[i])? jsonUUIDToPocketbaseId[jsonContents.transactions[i].event] : null,
 						"direction" : jsonContents.transactions[i].direction,
 						"icon" : jsonContents.transactions[i].icon,
 						"money" : jsonContents.transactions[i].money,
 						"note" : jsonContents.transactions[i].note,
+						"people" : transaction_people.filter(junction => junction.transaction == jsonContents.transactions[i].id).map(junction => jsonUUIDToPocketbaseId[junction.person]),
+						"place" : ("place" in jsonContents.transactions[i])? jsonUUIDToPocketbaseId[jsonContents.transactions[i].place] : null,
 						"type" : jsonContents.transactions[i].type,
 						"wallet" : jsonUUIDToPocketbaseId[jsonContents.transactions[i].wallet],
 						"uuid" : jsonContents.transactions[i].id,
@@ -187,6 +315,7 @@ routerAdd("POST", "/json-upload", (c) => {
 		// create transfers
 		if(jsonContents.transfers && jsonContents.transfers.length > 0) {
 			results.transfers.total = jsonContents.transfers.length;
+			const transfer_people = jsonContents.transfer_people || [];
 			const transferCollection = $app.dao().findCollectionByNameOrId("transfers");
 			const existingTransfers = $app.dao().findRecordsByFilter(
 				"transfers",                         // collection
@@ -212,7 +341,10 @@ routerAdd("POST", "/json-upload", (c) => {
 						"count_in_total" : jsonContents.transfers[i].count_in_total,
 						"date" : jsonContents.transfers[i].date,
 						"description" : jsonContents.transfers[i].description,
+						"event" : ("event" in jsonContents.transfers[i])? jsonUUIDToPocketbaseId[jsonContents.transfers[i].event] : null,
 						"note" : jsonContents.transfers[i].note,
+						"people" : transfer_people.filter(junction => junction.transfer == jsonContents.transfers[i].id).map(junction => jsonUUIDToPocketbaseId[junction.person]),
+						"place" : ("place" in jsonContents.transfers[i])? jsonUUIDToPocketbaseId[jsonContents.transfers[i].place] : null,
 						"transaction_from" : jsonUUIDToPocketbaseId[jsonContents.transfers[i]["from"]],
 						"transaction_tax" : (jsonContents.transfers[i]["tax"] in jsonUUIDToPocketbaseId)? jsonUUIDToPocketbaseId[jsonContents.transfers[i]["tax"]] : null,
 						"transaction_to" : jsonUUIDToPocketbaseId[jsonContents.transfers[i]["to"]],
