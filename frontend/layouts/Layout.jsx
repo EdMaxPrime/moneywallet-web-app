@@ -19,6 +19,7 @@ module.exports = {
 					<li><m.route.Link href="/transactions">Transactions</m.route.Link></li>
 					<li><m.route.Link href="/categories">Categories</m.route.Link></li>
 					<li><m.route.Link href="/overview">Overview</m.route.Link></li>
+					<li><m.route.Link href="/budgets">Budgets</m.route.Link></li>
 					<li><m.route.Link href="/import">Import Data</m.route.Link></li>
 				</ul>
 				<div class="container"><a href="#" data-target="sidenav" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
