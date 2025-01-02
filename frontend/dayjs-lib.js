@@ -12,6 +12,8 @@ const quarterOfYear = require("dayjs/plugin/quarterOfYear");
 dayjs.extend(quarterOfYear); //plugin for Quarter grouping
 const weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear); // plugin to get week number in year 1-53
+const relativeTime = require("dayjs/plugin/relativeTime");
+dayjs.extend(relativeTime);
 
 // Add a custom "startOf" method to support User Settings
 dayjs.extend(function(option, dayjsClass, dayjsFactory) {
