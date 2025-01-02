@@ -4,6 +4,7 @@ This file sets up the Single Page Application using the Mithril framework. All
 *****************************************************************************/
 
 const m = require("mithril")
+const Budgets = require("./pages/budgets.jsx")
 const Categories = require("./pages/categories.jsx")
 const CategoryView = require("./pages/category_view.jsx")
 const CreateWallet = require("./pages/create_wallet.jsx")
@@ -75,6 +76,7 @@ m.route(document.body, "/register", {
 	"/categories": loginAndDataRequired(Categories, "Categories"),
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
 	"/overview": loginAndDataRequired(Overview, "Overview"),
+	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/register": Register,
 	"/login": Login,
