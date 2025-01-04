@@ -18,8 +18,11 @@ const dayjs = require("../dayjs-lib")
  */
 module.exports = {
 	view: function(vnode) {
-		const used = vnode.attrs.used;
-		const money = vnode.attrs.money;
+		// shorter names for frequently accessed attributes
+		const used = vnode.attrs.budget.used;
+		const money = vnode.attrs.budget.money;
+		const currencyId = vnode.attrs.budget.currency;
+
 		return m("div.card", [
 			m("div.card-content", [
 				m("span.card-title", vnode.attrs.name),
@@ -62,7 +65,7 @@ module.exports = {
 						},
 						tooltip: {
 							pointFormatter: function() {
-								return Util.formatMoneyAmount(this.y, vnode.attrs.currency)
+								return Util.formatMoneyAmount(this.y, currencyId)
 							},
 						},
 						xAxis: {
@@ -89,12 +92,12 @@ module.exports = {
 						},
 					}
 				}),
-				m("p", "Spent " + Util.formatMoneyAmount(used, vnode.attrs.currency) + " of " + Util.formatMoneyAmount(money, vnode.attrs.currency) + " (" + Math.round(100 * used / money) + "% of goal)"),
-				m("p", "Available: " + (used < money? Util.formatMoneyAmount(money - used, vnode.attrs.currency) : "0")),
+				m("p", "Spent " + Util.formatMoneyAmount(used, currencyId) + " of " + Util.formatMoneyAmount(money, currencyId) + " (" + Math.round(100 * used / money) + "% of goal)"),
+				m("p", "Available: " + (used < money? Util.formatMoneyAmount(money - used, currencyId) : "0")),
 				m("p", "Ends: " + dayjs(vnode.attrs.end_date).fromNow())
 			]),
 			m("div.card-action", 
-				m(m.route.Link, {href: "/budget/tag/" + vnode.attrs.id}, "Details")
+				m(m.route.Link, {href: "/budget/tag/" + vnode.attrs.budget.id}, "Details")
 			)
 		]);
 	}
