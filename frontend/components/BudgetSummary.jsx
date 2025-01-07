@@ -23,6 +23,8 @@ module.exports = {
 		const money = vnode.attrs.budget.money;
 		const currencyId = vnode.attrs.budget.currency;
 
+		console.log(vnode.attrs.budget.end_date, dayjs(vnode.attrs.budget.end_date).fromNow());
+
 		return m("div.card", [
 			m("div.card-content", [
 				m("span.card-title", vnode.attrs.name),
@@ -94,10 +96,10 @@ module.exports = {
 				}),
 				m("p", "Spent " + Util.formatMoneyAmount(used, currencyId) + " of " + Util.formatMoneyAmount(money, currencyId) + " (" + Math.round(100 * used / money) + "% of goal)"),
 				m("p", "Available: " + (used < money? Util.formatMoneyAmount(money - used, currencyId) : "0")),
-				m("p", "Ends: " + dayjs(vnode.attrs.end_date).fromNow())
+				m("p", "Ends: " + dayjs(vnode.attrs.budget.end_date).fromNow())
 			]),
 			m("div.card-action", 
-				m(m.route.Link, {href: "/budget/tag/" + vnode.attrs.budget.id}, "Details")
+				m(m.route.Link, {href: "/budget/" + vnode.attrs.budget.id}, "Details")
 			)
 		]);
 	}
