@@ -1,4 +1,5 @@
 const pb = require("../api.js")
+const Budget = require("./Budget.js")
 const Category = require("./Category.js")
 const Currency = require("./Currency.js")
 const Transaction = require("./Transaction.js")
@@ -77,6 +78,31 @@ module.exports = {
 			console.log("Load parent entities", error);
 			return error;
 		})
+	},
+
+	/**
+	 * Creates a name for a budget depending on its category. If the type is expense
+	 * or income, then that will be the name. If it is a budget for a category, then
+	 * the name comes from the category. NOTE: Categories must be loaded.
+	 * @param budget  a budget object with type and category properties. 
+	 * OR just the ID.
+	 * @return  string name
+	 */
+	budgetName: function(budget) {
+		if (typeof budget == "string") { // convert id to budget object
+			budget = Budget.getById(budget);
+		}
+		switch(parseInt(budget.type)) {
+		case Budget.TYPE_INCOME:
+			return "Income";
+			break;
+		case Budget.TYPE_CATEGORY:
+			return Category.getById(budget.category).name;
+			break;
+		default:
+			return "Expense";
+			break;
+		}
 	},
 
 };
