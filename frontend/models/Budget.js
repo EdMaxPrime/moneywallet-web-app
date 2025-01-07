@@ -27,13 +27,41 @@ var Budget = {
 	loadListHelper: function(budgetsList) {
 		Budget.running = [];
 		Budget.expired = [];
+		Budget.byId = {};
 
 		for(let i = 0; i < budgetsList.length; i++) {
+			Budget.byId[budgetsList[i].id] = budgetsList[i];
 			if(dayjs(budgetsList[i].end_date).isBefore(dayjs())) {
 				Budget.expired.push(budgetsList[i]);
 			} else {
 				Budget.running.push(budgetsList[i]);
 			}
+		}
+	},
+
+	getById: function(id) {
+		return Budget.byId[id];
+	},
+
+	getTransactions: function(budget) {
+		if (budget == null || !budget) {
+			return [];
+		}
+		// create filter for dates, and wallets; user handled by API rules
+		const walletJoinExpression = budget.wallets.map(wallet => "'" + wallet + "' = wallet").join(" || ");
+		const commonFilter = "date >= {:start_date} && date <= {:end_date} (" + walletJoinExpression + ") ";
+		// add category/direction to filter and send API
+		if (budget.type != Budget.TYPE_CATEGORY) {
+			return pb.collection("transactions").getFullList({
+				filter: pb.filter(commonFilter + " && direction = {:type}", budget),
+				sort: '-date',
+			});
+		}
+		else {
+			return pb.collection("transactions").getFullList({
+				filter: pb.filter(commonFilter + " && category = {:category}", budget),
+				sort: '-date',
+			});
 		}
 	},
 };
