@@ -2,6 +2,7 @@
 const m = require("mithril")
 const HighchartsContainer = require("../components/HighchartsContainer")
 const TransactionList = require("../components/TransactionList")
+const WalletChip = require("../components/WalletChip.jsx")
 
 // PocketBase API imports
 const Budget = require("../models/Budget")
@@ -123,6 +124,8 @@ module.exports = function() {
 
 				return (
 					<div>
+						<h4>From {dayjs(budget.start_date).formatDate()} to {dayjs(budget.end_date).formatDate()}</h4>
+						{budget.wallets.map(walletId => (<WalletChip id={walletId} />))}
 						<HighchartsContainer chartOptions={chartOptions} allowChartUpdate={false} />
 						<TransactionList transactions={transactions} />
 					</div>

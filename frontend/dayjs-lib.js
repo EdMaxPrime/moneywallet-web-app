@@ -13,7 +13,9 @@ dayjs.extend(quarterOfYear); //plugin for Quarter grouping
 const weekOfYear = require("dayjs/plugin/weekOfYear");
 dayjs.extend(weekOfYear); // plugin to get week number in year 1-53
 const relativeTime = require("dayjs/plugin/relativeTime");
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime); // plugin to show how much time from now something ends in (ex: 1 month from now)
+var localizedFormat = require("dayjs/plugin/localizedFormat");
+dayjs.extend(localizedFormat); // plugin to display dates in a locale-aware format
 
 // Add a custom "startOf" method to support User Settings
 dayjs.extend(function(option, dayjsClass, dayjsFactory) {
@@ -90,6 +92,15 @@ dayjs.extend(function(option, dayjsClass, dayjsFactory) {
 			return endOfWeek;
 		}
 		return this.endOf(unit);
+	}
+
+
+	/**
+	 * Formats a date (not time) according to user settings.
+	 * @return string
+	 */
+	dayjsClass.prototype.formatDate = function() {
+		return this.format("L");
 	}
 });
 
