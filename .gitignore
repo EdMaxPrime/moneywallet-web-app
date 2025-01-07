@@ -20,3 +20,6 @@ pocketbase*.zip
 
 # ignore Mac files
 .DS_Store
+
+# ignore brainstorm folder
+brainstorm/
