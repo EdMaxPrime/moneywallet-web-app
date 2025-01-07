@@ -3,8 +3,10 @@ This file sets up the Single Page Application using the Mithril framework. All
 "routes" are declared here. This is the entry point to the website.
 *****************************************************************************/
 
+// Mithril Page Imports
 const m = require("mithril")
 const Budgets = require("./pages/budgets.jsx")
+const BudgetDetails = require("./pages/budget_details.jsx")
 const Categories = require("./pages/categories.jsx")
 const CategoryView = require("./pages/category_view.jsx")
 const CreateWallet = require("./pages/create_wallet.jsx")
@@ -16,6 +18,7 @@ const Overview = require("./pages/overview.jsx")
 const Register = require("./pages/register.jsx")
 const Transactions = require("./pages/transactions.jsx")
 
+// Pocketbase API imports
 const pb = require("./api")
 const Category = require("./models/Category")
 const Util = require("./models/index")
@@ -77,6 +80,7 @@ m.route(document.body, "/register", {
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
 	"/overview": loginAndDataRequired(Overview, "Overview"),
 	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
+	"/budget/:budget_id": loginAndDataRequired(BudgetDetails, parameters => Util.budgetName(parameters.budget_id)),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/register": Register,
 	"/login": Login,
