@@ -19,8 +19,8 @@ const dayjs = require("../dayjs-lib")
 module.exports = {
 	view: function(vnode) {
 		// shorter names for frequently accessed attributes
-		const used = vnode.attrs.budget.used;
-		const money = vnode.attrs.budget.money;
+		const used = Math.abs(vnode.attrs.budget.progress);
+		const money = Math.abs(vnode.attrs.budget.money);
 		const currencyId = vnode.attrs.budget.currency;
 
 		console.log(vnode.attrs.budget.end_date, dayjs(vnode.attrs.budget.end_date).fromNow());

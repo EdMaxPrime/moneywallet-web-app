@@ -31,8 +31,8 @@ module.exports = function() {
 				// show list of active running budgets
 				return m("div", {}, Budget.running.map(budget => {
 					return m(BudgetSummary, {
-						key: budget.id, 
-						budget: Object.assign(budget, {used: 100}), 
+						key: budget.budget_id, 
+						budget: budget, 
 						name: Util.budgetName(budget),
 					});
 				}));
