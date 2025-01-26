@@ -18,8 +18,16 @@ var Budget = {
 	TYPE_EXPENSE: 1,
 	TYPE_CATEGORY: 2,
 
+	/**
+	 * Fetch all budgets with a few extra fields: progress (how much was consumed),
+	 * category, category_name, category_type, category_icon.
+	 * This returns a promise that is handled internally. When it resolves, the
+	 * budgets can be accessed in "running" and "expired" arrays. If it rejects,
+	 * the data will be an empty array.
+	 * @return Promise
+	 */
 	loadList: function() {
-		return pb.collection("budgets").getFullList({
+		return pb.collection("budgets_progress").getFullList({
 			sort: '-start_date,tag'
 		}).then(Budget.loadListHelper);
 	},
