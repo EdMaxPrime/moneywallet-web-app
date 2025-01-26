@@ -97,7 +97,11 @@ module.exports = {
 			return "Income";
 			break;
 		case Budget.TYPE_CATEGORY:
-			return Category.getById(budget.category).name;
+			if (budget.hasOwnProperty("category_name")) {
+				return budget["category_name"];
+			} else {
+				return Category.getById(budget.category).name;
+			}
 			break;
 		default:
 			return "Expense";
