@@ -19,6 +19,7 @@ module.exports = {
 					<li><m.route.Link href="/transactions">Transactions</m.route.Link></li>
 					<li><m.route.Link href="/categories">Categories</m.route.Link></li>
 					<li><m.route.Link href="/overview">Overview</m.route.Link></li>
+					<li><m.route.Link href="/report/transfers">Transfers Report</m.route.Link></li>
 					<li><m.route.Link href="/budgets">Budgets</m.route.Link></li>
 					<li><m.route.Link href="/import">Import Data</m.route.Link></li>
 				</ul>
