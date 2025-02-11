@@ -6,6 +6,13 @@ var Category = {
 	system: [],
 	byId: {},
 
+	TYPE_INCOME: 0,
+	TYPE_EXPENSE: 1,
+	TYPE_SYSTEM: 2,
+	DIRECTION_EXPENSE: 0, //same value as Transaction.direction
+	DIRECTION_INCOME: 1, //same value as Transaction.direction
+	DIRECTION_BOTH: 2, //only used for Transfer category to exclude from some reports
+
 	loadList: function() {
 		return pb.collection('categories').getFullList({
 			sort: 'index'
@@ -14,9 +21,9 @@ var Category = {
 
 	loadListHelper: function(categories_list) {
 		// reset state and sort the categories into types
-		Category.income = categories_list.filter(category => category["type"] == 0);
-		Category.expense = categories_list.filter(category => category["type"] == 1);
-		Category.system = categories_list.filter(category => category["type"] == 2);
+		Category.income = categories_list.filter(category => category["type"] == Category.TYPE_INCOME);
+		Category.expense = categories_list.filter(category => category["type"] == Category.TYPE_EXPENSE);
+		Category.system = categories_list.filter(category => category["type"] == Category.TYPE_SYSTEM);
 		// quick lookup by ID
 		categories_list.forEach(category => {
 			Category.byId[ category["id"] ] = category;
@@ -50,7 +57,37 @@ var Category = {
 	 */
 	getById: function(id) {
 		return Category.byId[id];
-	}
+	},
+
+	/**
+	 * Determines whether a category represents Expense or Income transactions.
+	 * Ignores the system category "Transfer", which includes both types.
+	 * @return the same constants as other model directions
+	 */
+	getDirection: function(id) {
+		const category = Category.byId[id];
+		if (category.type == Category.TYPE_EXPENSE) {
+			return Category.DIRECTION_EXPENSE;
+		} else if (category.type == Category.TYPE_INCOME) {
+			return Category.DIRECTION_INCOME;
+		} else {
+			switch (category.tag) {
+			case "system::credit":
+			case "system::paid_debt":
+			case "system::deposit":
+			case "system::tax":
+			case "system::transfer_tax":
+				return Category.DIRECTION_EXPENSE;
+				break;
+			case "system::debt":
+			case "system::paid_credit":
+			case "system::withdraw":
+				return Category.DIRECTION_INCOME;
+				break;
+			}
+		}
+		return Category.DIRECTION_BOTH;
+	},
 };
 
 module.exports = Category;

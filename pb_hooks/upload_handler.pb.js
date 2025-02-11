@@ -108,7 +108,7 @@ routerAdd("POST", "/json-upload", (c) => {
 			for(let i = 0; i < jsonContents.categories.length; i++) {
 				// find an existing category with this name, otherwise create new one
 				let record = existingCategories.filter(
-					category => category.getString("name") == jsonContents.categories[i].name);
+					category => category.getString("uuid") == jsonContents.categories[i].id);
 				if(record.length == 0) {
 					record = new Record(categoryCollection);
 				} else {
@@ -122,8 +122,10 @@ routerAdd("POST", "/json-upload", (c) => {
 						"index" : jsonContents.categories[i].index,
 						"name" : jsonContents.categories[i].name,
 						"show_in_report" : jsonContents.categories[i].show_report,
+						"tag" : jsonContents.categories[i].tag,
 						"type" : jsonContents.categories[i].type,
 						"user_owner" : requestInfo.authRecord.getString("id"),
+						"uuid" : jsonContents.categories[i].id,
 					});
 					form.submit();
 					jsonUUIDToPocketbaseId[jsonContents.categories[i].id] = record.getId(); // associate old ID with new one
