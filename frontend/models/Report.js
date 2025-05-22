@@ -1,4 +1,5 @@
 const pb = require("../api")
+const util = require("../util")
 
 const Report = {
 	getNetWorth: function(wallet) {
@@ -43,7 +44,43 @@ const Report = {
 			}
 			return result;
 		})
-	}
+	},
+
+	/**
+	 * Fetches a sum of how much money was spent in each category. Income and 
+	 * expense categories. If multiple currencies were used, then there will be 
+	 * multiple records.
+	 * @param startDate  start of the inclusive date range to filter results
+	 * @param endDate    end of the inclusive date range to filter results
+	 * @param wallet     optional. ID of wallet to filter transactions.
+	 * @return           a list of results. Every item is an object with these
+	 *                   unique fields: categoryId, currencyId, money.
+	 */
+	getMoneyPerCategory: function(startDate, endDate, wallet) {
+		return pb.collection("categories_daily").getFullList({
+			filter: pb.filter(
+				"date >= {:startDate} && date <= {:endDate}",
+				{
+					startDate: startDate,
+					endDate: endDate,
+				}
+			),
+		}).then(function(records) {
+			this.moneyPerCategoryCache = util.groupBy(
+				records,
+				["categories", "currencies"],
+				function(groupNames, recordsInGroup) {
+					return {
+						categoryId: groupNames[0],
+						currencyId: groupNames[1],
+						money: recordsInGroup.reduce((sum, record) => sum + parseInt(record.money), 0)
+					};
+				}
+			);
+			return this.moneyPerCategoryCache;
+		})
+	},
+	moneyPerCategoryCache: null,
 };
 
 module.exports = Report;
