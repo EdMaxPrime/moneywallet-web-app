@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "esbuild index.js --bundle --sourcemap --jsx-factory=m --outfile=../pb_public/script.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ospec"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +15,10 @@
     "esbuild": "0.17.19",
     "mithril": "^2.2.2",
     "pocketbase": "^0.21.0"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0",
+    "mithril-query": "^4.0.1",
+    "ospec": "^4.2.1"
   }
 }
