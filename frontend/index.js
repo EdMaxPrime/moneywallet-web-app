@@ -17,11 +17,13 @@ const Logout = require("./pages/logout.jsx")
 const Overview = require("./pages/overview.jsx")
 const Register = require("./pages/register.jsx")
 const ReportTransfers = require("./pages/report_transfers.jsx")
+const ReportCategories = require("./pages/report_detailed.jsx")
 const Transactions = require("./pages/transactions.jsx")
 
 // Pocketbase API imports
 const pb = require("./api")
 const Category = require("./models/Category")
+const Report = require("./models/Report")
 const Util = require("./models/index")
 
 
@@ -54,15 +56,24 @@ function loginRequired(page) {
  * avoid unecessary teardown.
  * @param title  the title to display in the Layout above the page. Either a
  * string, or a function which returns a string and takes page route params
+ * @param otherData  optional. A function that returns a promise that fetches
+ * data before the page is rendered.
  * @return a RouteResolver with logic to check for permission and fetch data
  */
-function loginAndDataRequired(page, title) {
+function loginAndDataRequired(page, title, otherData) {
 	return {
-		onmatch: function() {
+		onmatch: function(routeParameters) {
+			// if you are not logged in, redirect
 			if(!pb.authStore.isValid) {
 				m.route.set("/login");
-			} else {
-				return Util.loadParentEntities()
+			} 
+			// if you are logged in, load page
+			else {
+				let promise = Util.loadParentEntities();
+				if(otherData) {
+					promise.then(otherData(routeParameters));
+				}
+				return promise;
 			}
 		},
 		render: function(vnode) { //vnode.attrs is route parameters from the url
@@ -81,6 +92,7 @@ m.route(document.body, "/register", {
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
 	"/overview": loginAndDataRequired(Overview, "Overview"),
 	"/report/transfers": loginAndDataRequired(ReportTransfers, "Transfers Report"),
+	"/report/categories": loginAndDataRequired(ReportCategories, "Categories Report"),
 	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
 	"/budget/:budget_id": loginAndDataRequired(BudgetDetails, parameters => Util.budgetName(parameters.budget_id)),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
