@@ -88,6 +88,21 @@ var Category = {
 		}
 		return Category.DIRECTION_BOTH;
 	},
+
+	/**
+	 * Returns the parent category of a child category. Or, if it has no parent
+	 * it will return itself.
+	 * @param childCategoryId  the id of a category
+	 * @return  the id of the parent category
+	 */
+	getParent: function(childCategoryId) {
+		let parentId = this.getById(childCategoryId).parent;
+		if (this.getById(parentId)) {
+			return parentId;
+		} else {
+			return childCategoryId;
+		}
+	},
 };
 
 module.exports = Category;

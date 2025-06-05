@@ -20,9 +20,14 @@ ERROR = 4
 ERROR_PARAMETERS = 5;
 
 /**
- * Creates the data structure for Highcharts pie chart.
+ * Creates the data structure for Highcharts pie chart. The main pie chart
+ * will only include parent categories (value is sum of child categories).
+ * When the user clicks on a slice, they will drill down to another pie chart
+ * that only shows child categories of that slice, revealing more detail.
  * @param title  the bolded title above the chart
- * @param data   list of points with two properties: name (string) and y (number)
+ * @param data   list of points with two properties: name (string) and y (number).
+ *               also include "moneyWalletCategoryId" so that a drilldown
+ *               pie chart can be generated.
  * @param currencyId  this identifier instructs the tooltip formatter how to
  *                    show currency-specific numbers
  * @return  object
@@ -34,6 +39,23 @@ const createPieChartOptions = function(title, data, currencyId) {
 		},
 		credits: {
 			enabled: false,
+		},
+		drilldown: {
+			series: util.groupBy(
+				data,
+				[
+					pieSlice => Category.getParent(pieSlice.moneyWalletCategoryId)
+				],
+				function(groupNames, recordsInGroup) {
+					return {
+						data: recordsInGroup.map(
+							childCategoryPieSlice => [childCategoryPieSlice.name, childCategoryPieSlice.y]
+						),
+						id: groupNames[0],
+						name: Category.getById(groupNames[0]).name,
+					};
+				}
+			),
 		},
 		plotOptions: {
 			series: {
@@ -63,7 +85,23 @@ const createPieChartOptions = function(title, data, currencyId) {
 			{
 				name: "Percentage",
 				colorByPoint: true,
-				data: data,
+				data: util.groupBy(
+					data,
+					[
+						pieSlice => Category.getParent(pieSlice.moneyWalletCategoryId)
+					],
+					function(groupNames, recordsInGroup) {
+						return {
+							drilldown: groupNames[0],
+							name: Category.getById(groupNames[0]).name,
+							y: recordsInGroup.reduce(
+								(partialSum, current) => partialSum + current.y,
+								0),
+						};
+					}
+				).sort(function(a, b) { // sort big pie slices from largest to smallest
+					return a.y - b.y;
+				}),
 			}
 		],
 		subtitle: {
@@ -96,7 +134,7 @@ module.exports = function(initialVnode) {
 	if (startDate.isValid() && endDate.isValid() && startDate.isBefore(endDate)) {
 		Report.getMoneyPerCategory(initialVnode.attrs.startDate, initialVnode.attrs.endDate)
 			.then(data => {
-				// sort data into groups by category, and transform it into HighCharts pie chart format
+				// sort data into groups by currency, then category, and transform it into HighCharts pie chart format
 				categoryPieCharts = util.groupBy(
 					data, 
 					["currencyId"], 
@@ -107,19 +145,19 @@ module.exports = function(initialVnode) {
 							currencyName: Currency.getById(groupNames[0]).name,
 						};
 
+						// TODO: use Category.getParent() to group expense categories by parent and create a drilldown series
 						// create data structure for expense category pie chart
 						let expenseData = recordsInGroup.filter(
 								item => Category.getDirection(item.categoryId) == Category.DIRECTION_EXPENSE
 							).map(
 								item => {
 									return {
+										moneyWalletCategoryId: item.categoryId,
 										name: Category.getById(item.categoryId).name,
 										y: item.money,
 									}
 								}
-							).sort(function(a, b) {
-								return a.y - b.y;
-							});
+							);
 						categoryPieChartsRow.expensePieChartOptions = createPieChartOptions("Expenses by Category", expenseData, groupNames[0]);
 
 						// create data structure for income category pie chart
@@ -128,13 +166,12 @@ module.exports = function(initialVnode) {
 							).map(
 								item => {
 									return {
+										moneyWalletCategoryId: item.categoryId,
 										name: Category.getById(item.categoryId).name,
 										y: item.money,
 									}
 								}
-							).sort(function(a, b) {
-								return a.y - b.y;
-							});
+							)
 						categoryPieChartsRow.incomePieChartOptions = createPieChartOptions("Income by Category", incomeData, groupNames[0]);
 
 						return categoryPieChartsRow;
