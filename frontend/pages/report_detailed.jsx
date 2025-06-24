@@ -112,7 +112,7 @@ const createPieChartOptions = function(title, data, currencyId) {
 		},
 		tooltip: {
 			pointFormatter: function() {
-				return this.series.name + ": <b>" + Util.formatMoneyAmount(Math.abs(this.y), Currency.getById(currencyId)) + "</b><br/>";
+				return "Money: <b>" + Util.formatMoneyAmount(Math.abs(this.y), Currency.getById(currencyId)) + "</b><br/>Percentage: <b>" + this.percentage.toFixed(1) + "%</b>";
 			},
 		},
 	};
