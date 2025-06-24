@@ -40,6 +40,9 @@ module.exports = function() {
 		credits: {
 			enabled: false
 		},
+		exporting: {
+			showTable: true,
+		},
 		legend: {
 			layout: "horizontal",
 			align: "right",
