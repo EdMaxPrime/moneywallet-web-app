@@ -35,6 +35,27 @@ ERROR_PARAMETERS = 5;
 const createPieChartOptions = function(title, data, currencyId) {
 	return {
 		chart: {
+			events: {
+				/**
+				 * This event is fired by Highcharts after the user requests a
+				 * table to be generated for the chart, but before insertion
+				 * into the DOM. The event object contains the DOM tree for the
+				 * table. This function can modify cell contents to format 
+				 * currency amounts correctly.
+				 */
+				afterGetTableAST: function(e) {
+					// go down the dom heirarchy: e.tree = <table>, e.tree.children = [<caption>, <thead>, <tbody>], e.tree.children[2].children = [<tr>]
+					// for each row in the table body, format the second cell as currency
+					e.tree.children[2].children.forEach(function(row) {
+						try {
+							let moneyCell = row.children[1]
+							let moneyAsInteger = parseInt(moneyCell.textContent);
+							moneyCell.textContent = Util.formatMoneyAmount(Math.abs(moneyAsInteger), Currency.getById(currencyId));
+						} 
+						catch(e) {} // ignore parse errors
+					});
+				},
+			},
 			type: "pie",
 		},
 		credits: {
@@ -83,7 +104,7 @@ const createPieChartOptions = function(title, data, currencyId) {
 		},
 		series: [
 			{
-				name: "Percentage",
+				name: "Money",
 				colorByPoint: true,
 				data: util.groupBy(
 					data,
