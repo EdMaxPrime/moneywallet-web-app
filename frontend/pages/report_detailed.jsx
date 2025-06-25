@@ -214,7 +214,20 @@ module.exports = function(initialVnode) {
 	return {
 		view: function(vnode) {
 			if (status == READY) {
-				return categoryPieCharts.map(categoryPieChartsRow => (
+				return (<div>
+					<section>
+						<m.route.Link class="btn" href="/report/categories" params={{
+							startDate: startDate.subtract(1, 'month').format('YYYY-MM-DD'),
+							endDate: endDate.subtract(1, 'month').format('YYYY-MM-DD'),
+							key: startDate.subtract(1, 'month').format('YYYY-MM-DD') + endDate.subtract(1, 'month').format('YYYY-MM-DD')
+						}}>Previous Month</m.route.Link>
+						<m.route.Link class="btn" href="/report/categories" params={{
+							startDate: startDate.add(1, 'month').format('YYYY-MM-DD'),
+							endDate: endDate.add(1, 'month').format('YYYY-MM-DD'),
+							key: startDate.subtract(1, 'month').format('YYYY-MM-DD') + endDate.subtract(1, 'month').format('YYYY-MM-DD')
+						}}>Next Month</m.route.Link>
+					</section>
+					{categoryPieCharts.map(categoryPieChartsRow => (
 					<div class="row" key={categoryPieChartsRow.currencyName}>
 						<h3 class="col s12">{categoryPieChartsRow.currencyName}</h3>
 						<div class="col s12 m6">
@@ -228,7 +241,8 @@ module.exports = function(initialVnode) {
 								allowChartUpdate={false} />
 						</div>
 					</div>
-				));
+				))}
+					</div>);
 			}
 			else if (status == WAITING) {
 				return (
