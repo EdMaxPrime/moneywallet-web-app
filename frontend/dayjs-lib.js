@@ -16,6 +16,8 @@ const relativeTime = require("dayjs/plugin/relativeTime");
 dayjs.extend(relativeTime); // plugin to show how much time from now something ends in (ex: 1 month from now)
 var localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat); // plugin to display dates in a locale-aware format
+var utc = require("dayjs/plugin/utc");
+dayjs.extend(utc); // plugin to switch between UTC and local time
 
 // Add a custom "startOf" method to support User Settings
 dayjs.extend(function(option, dayjsClass, dayjsFactory) {
