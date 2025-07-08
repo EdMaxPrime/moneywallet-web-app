@@ -35,6 +35,45 @@ module.exports = function() {
 	// configuration for the Net Worth chart
 	const netWorthOptions = {
 		chart: {
+			events: {
+				/**
+				 * This event is fired by Highcharts after the user requests a
+				 * table to be generated for the chart, but before insertion
+				 * into the DOM. The event object contains the DOM tree for the
+				 * table. This function can modify cell contents to format 
+				 * currency amounts correctly.
+				 */
+				afterGetTableAST: function(e) {
+					// go down the dom heirarchy: e.tree = <table>, e.tree.children = [<caption>, <thead>, <tbody>], e.tree.children[2].children = [<tr>]
+					// for each row in the table body, format the second cell as currency
+					e.tree.children[2].children.forEach(function(row) {
+						try {
+							// create link to deep dive report for this period
+							let dateCell = row.children[0];
+							let startDate = dayjs(dateCell.textContent, "YYYY-MM-DD hh:mm:ss");
+							let endDate = startDate.mwEndOf(grouping);
+							dateCell.children = [
+								{
+									tagName: "a",
+									attributes: {
+										href: m.route.prefix + "/report/categories?startDate=" + startDate.format("YYYY-MM-DD") + "&endDate=" + endDate.format("YYYY-MM-DD")
+									},
+									textContent: startDate.formatDate() + " - " + endDate.formatDate(),
+								}
+							];
+							delete dateCell.textContent; //get rid of Highcharts generated timestamp
+
+							// format currency amounts
+							for(let i = 1; i < row.children.length; i++) {
+								let moneyCell = row.children[i];
+								let moneyAsInteger = parseInt(moneyCell.textContent);
+								moneyCell.textContent = Util.formatMoneyAmount(Math.abs(moneyAsInteger), Currency.getByISO(e.tree.children[1].children[0].children[i].textContent));
+							}
+						} 
+						catch(e) {} // ignore parse errors
+					});
+				},
+			},
 			type: "area",
 		},
 		credits: {
@@ -42,6 +81,9 @@ module.exports = function() {
 		},
 		exporting: {
 			showTable: true,
+			csv: {
+				dateFormat: "%Y-%m-%d %H:%M:%S",
+			},
 		},
 		legend: {
 			layout: "horizontal",
@@ -154,6 +196,13 @@ module.exports = function() {
 			status = ERROR;
 		})
 	};
+
+	/*
+	group by time period, wallet -> list of {startDate, endDate, walletId, currencyId, balance: latest point}
+	filter relevant wallets?
+	group by currency -> list of {startDate, endDate, currencyId, balance}
+
+	*/
 
 	/**
 	 * Filter, reduce and map the raw request data into a format suitable for
