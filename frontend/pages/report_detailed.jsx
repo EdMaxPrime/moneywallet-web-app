@@ -1,6 +1,7 @@
 const m = require("mithril")
 // Mithril component imports
 const HighchartsContainer = require("../components/HighchartsContainer")
+const TransactionHistogram = require("../components/TransactionHistogram")
 
 // Data model imports
 const Category = require("../models/Category")
@@ -166,7 +167,6 @@ module.exports = function(initialVnode) {
 							currencyName: Currency.getById(groupNames[0]).name,
 						};
 
-						// TODO: use Category.getParent() to group expense categories by parent and create a drilldown series
 						// create data structure for expense category pie chart
 						let expenseData = recordsInGroup.filter(
 								item => Category.getDirection(item.categoryId) == Category.DIRECTION_EXPENSE

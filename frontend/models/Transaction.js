@@ -42,6 +42,17 @@ var Transaction = {
 		})
 	},
 
+	getByDates: function(startDate, endDate) {
+		return pb.collection("transactions").getFullList({
+			filter: pb.filter(
+				"date >= {:startDate} && date <= {:endDate}",
+				{
+					startDate: startDate,
+					endDate: endDate,
+				})
+		});
+	},
+
 	/**
 	 * Helper function to add lists
 	 */
