@@ -1,6 +1,8 @@
 const m = require("mithril");
 const Transaction = require("./TransactionItem")
 
+const Util = require("../util")
+
 
 // STATUSES
 const WAITING_FIRST = 1, // waiting for initial data to load
@@ -36,6 +38,9 @@ module.exports = function() {
 
 	let transactions = []; // holds the Transaction records
 
+	let oldFetch = null;
+	let oldArg = null;
+
 	/**
 	 * Loads more Transactions into the cache. This method is async, it will
 	 * redraw the component when the request completes.
@@ -43,19 +48,24 @@ module.exports = function() {
 	 */
 	const loadMoreData = function(vnode) {
 		status = WAITING;
+		oldFetch = vnode.attrs.fetch;
+		oldArg = vnode.attrs.arg;
 		// advance the cursor
 		vnode.attrs.fetch(currentPage + 1, itemsPerPage, vnode.attrs.arg)
 		.then(function(data) {
-			transactions = transactions.concat(data.items);
+			currentPage = data.page;
+			if(currentPage > 1) {
+				transactions = transactions.concat(data.items);
+			} else {
+				transactions = data.items;
+			}
 			numberOfPages = data.totalPages;
 			numberOfItems = data.totalItems;
 			empty = data.totalItems == 0;
-			currentPage = data.page;
 			status = READY;
 		})
 		.catch(function(error) {
 			status = ERROR;
-			console.log("Error loading data for paged transaction list: ", error);
 		})
 		.finally(m.redraw);
 	}
@@ -63,7 +73,10 @@ module.exports = function() {
 	return {
 		oninit: loadMoreData,
 		onupdate: function(vnode) {
-			// TODO: check if attributes actually changed before sending request
+			if(oldFetch !== vnode.attrs.fetch || !Util.shallowEquals(vnode.attrs.arg, oldArg)) {
+				currentPage = 0;
+				loadMoreData(vnode);
+			}
 		},
 		view: function(vnode) {
 			// when waiting for network response: keep the existing list, and show the loading indicator and disable the button
