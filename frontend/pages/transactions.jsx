@@ -1,6 +1,7 @@
 const m = require("mithril")
 const TransactionList = require("../components/TransactionList")
 const TransactionListPageable = require("../components/TransactionListPageable")
+const TransactionSearch = require("../components/TransactionSearch")
 
 const Transaction = require("../models/Transaction")
 
@@ -19,11 +20,18 @@ const Transaction = require("../models/Transaction")
 // 	}
 // }
 
+const searchEventListener = function(search) {
+	m.route.set("/transactions/search", {searchTerm: search});
+}
+
 module.exports = {
 	view: function() {
-		return (<TransactionListPageable 
-			arg={{sort: '-date'}} 
-			fetch={Transaction.loadSome}
-			showTotal={true} />);
+		return (<div>
+			<TransactionSearch onSearch={searchEventListener} />
+			<TransactionListPageable 
+				arg={{sort: '-date'}} 
+				fetch={Transaction.loadSome}
+				showTotal={true} />
+			</div>);
 	}
 }
