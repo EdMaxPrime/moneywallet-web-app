@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "currency.js": "^2.0.4",
     "dayjs": "^1.11.10",
     "esbuild": "0.17.19",
     "mithril": "^2.2.2",
