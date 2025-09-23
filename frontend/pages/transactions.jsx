@@ -20,8 +20,8 @@ const Transaction = require("../models/Transaction")
 // 	}
 // }
 
-const searchEventListener = function(search) {
-	m.route.set("/transactions/search", {searchTerm: search});
+const searchEventListener = function(searchQuery) {
+	m.route.set("/transactions/search", searchQuery);
 }
 
 module.exports = {
