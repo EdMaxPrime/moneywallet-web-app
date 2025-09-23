@@ -66,6 +66,32 @@ const groupBy = function(list, groupedKeys, aggregate) {
 	return recursiveDepthFirstTraversal(tree, []);
 }
 
+
+/**
+ * Test if two objects are equal based on their properties. No deep equality
+ * @param object1  an object
+ * @param object2  an object
+ * @return true if they are equal, false if not
+ */
+const shallowEquals = function(object1, object2) {
+	let keys1 = Object.keys(object1);
+	let keys2 = Object.keys(object2);
+
+	if(keys1.length != keys2.length) {
+		return false;
+	}
+
+	for(key of keys1) {
+		if(object1[key] !== object2[key]) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
 module.exports = {
 	groupBy: groupBy,
+	shallowEquals: shallowEquals,
 };
