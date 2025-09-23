@@ -19,6 +19,7 @@ const Register = require("./pages/register.jsx")
 const ReportTransfers = require("./pages/report_transfers.jsx")
 const ReportCategories = require("./pages/report_detailed.jsx")
 const Transactions = require("./pages/transactions.jsx")
+const TransactionSearch = require("./pages/transaction_search.jsx")
 
 // Pocketbase API imports
 const pb = require("./api")
@@ -61,6 +62,9 @@ function loginRequired(page) {
  * @return a RouteResolver with logic to check for permission and fetch data
  */
 function loginAndDataRequired(page, title, otherData) {
+	let dataLoading = true,
+	dataRequestError = null,
+	dataResult = null;
 	return {
 		onmatch: function(routeParameters) {
 			// if you are not logged in, redirect
@@ -69,17 +73,36 @@ function loginAndDataRequired(page, title, otherData) {
 			} 
 			// if you are logged in, load page
 			else {
-				let promise = Util.loadParentEntities();
 				if(otherData) {
-					promise.then(otherData(routeParameters));
+					return new Promise(function(resolve, reject) {
+						Util.loadParentEntities()
+						.then(() => otherData(routeParameters))
+						.then(data => {
+							dataLoading = false;
+							dataResult = data;
+							resolve(data);
+						})
+						.catch(error => {
+							dataRequestError = error;
+							reject(error);
+						});
+					});
+				} else {
+					return Util.loadParentEntities();
 				}
-				return promise;
 			}
 		},
 		render: function(vnode) { //vnode.attrs is route parameters from the url
-			return m(Layout, {
-				"title": typeof title == "function"? title(vnode.attrs) : title
-			}, m(page, vnode.attrs));
+			return m(
+				Layout, 
+				{
+					"title": typeof title == "function"? title(vnode.attrs) : title
+				}, 
+				m(
+					page, 
+					Object.assign({dataLoading, dataRequestError, dataResult}, vnode.attrs)
+				)
+			);
 		}
 	};
 }
@@ -87,6 +110,7 @@ function loginAndDataRequired(page, title, otherData) {
 
 m.route(document.body, "/register", {
 	"/transactions": loginAndDataRequired(Transactions, "Transactions"),
+	"/transactions/search": loginAndDataRequired(TransactionSearch, "Search Results"),
 	"/wallets/create": loginAndDataRequired(CreateWallet, "Create Wallet"),
 	"/categories": loginAndDataRequired(Categories, "Categories"),
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
