@@ -66,7 +66,7 @@ module.exports = function() {
 							// format currency amounts
 							for(let i = 1; i < row.children.length; i++) {
 								let moneyCell = row.children[i];
-								let moneyAsInteger = parseInt(moneyCell.textContent);
+								let moneyAsInteger = parseInt(moneyCell.textContent.replace(/\D/g, ""));
 								moneyCell.textContent = Util.formatMoneyAmount(Math.abs(moneyAsInteger), Currency.getByISO(e.tree.children[1].children[0].children[i].textContent));
 							}
 						} 
