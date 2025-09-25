@@ -18,6 +18,7 @@ const Overview = require("./pages/overview.jsx")
 const Register = require("./pages/register.jsx")
 const ReportTransfers = require("./pages/report_transfers.jsx")
 const ReportCategories = require("./pages/report_detailed.jsx")
+const Settings = require("./pages/settings.jsx")
 const Transactions = require("./pages/transactions.jsx")
 const TransactionSearch = require("./pages/transaction_search.jsx")
 
@@ -120,6 +121,7 @@ m.route(document.body, "/register", {
 	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
 	"/budget/:budget_id": loginAndDataRequired(BudgetDetails, parameters => Util.budgetName(parameters.budget_id)),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
+	"/settings": loginAndDataRequired(Settings, "Settings"),
 	"/register": Register,
 	"/login": Login,
 	"/logout": loginRequired(Logout),
