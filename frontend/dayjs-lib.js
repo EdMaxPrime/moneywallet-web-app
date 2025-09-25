@@ -18,6 +18,8 @@ var localizedFormat = require("dayjs/plugin/localizedFormat");
 dayjs.extend(localizedFormat); // plugin to display dates in a locale-aware format
 var utc = require("dayjs/plugin/utc");
 dayjs.extend(utc); // plugin to switch between UTC and local time
+var localeData = require("dayjs/plugin/localeData");
+dayjs.extend(localeData); // plugin to list days of the week
 
 // Add a custom "startOf" method to support User Settings
 dayjs.extend(function(option, dayjsClass, dayjsFactory) {
@@ -77,8 +79,9 @@ dayjs.extend(function(option, dayjsClass, dayjsFactory) {
 			// if month is > first month, then year+1 and set month and date
 		}
 		else if(unit == "month") {
-			const addMonth = this.date() >= Settings.first_month_date;
-			return this.add(addMonth, 'month').date(Settings.first_month_date);
+			const addMonth = this.date() >= Settings.first_month_date; // if true, date should be next month
+			const correctMonth = this.add(addMonth, 'month'); // accurate to the month and year, not date
+			return correctMonth.date(Math.min(correctMonth.daysInMonth(), Settings.first_month_date)).subtract(1, "day");
 		}
 		else if(unit == "week") {
 			let first_week_day = Settings.first_week_day < 7? Settings.first_week_day : 0; // normalize from 1-7 to 0-6 range
@@ -102,7 +105,7 @@ dayjs.extend(function(option, dayjsClass, dayjsFactory) {
 	 * @return string
 	 */
 	dayjsClass.prototype.formatDate = function() {
-		return this.format("L");
+		return this.format(Settings.date_format);
 	}
 });
 
