@@ -24,7 +24,7 @@ module.exports = {
 					<span class="red-text text-darken-1">
 						<MoneyAmount direction={t["direction"]} t={t} />
 					</span>
-					<p class="black-text">{dayjs(t["date"]).format("ddd DD MMM YYYY")}</p>
+					<p class="black-text">{dayjs(t["date"]).formatDate()}</p>
 				</p>
 		</li>);
 	}
