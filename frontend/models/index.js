@@ -11,6 +11,32 @@ module.exports = {
 	},
 
 	/**
+	 * Get the name of a related entity. For example, a transaction's wallet's name
+	 * @param transaction  can be null
+	 * @param stringName  the name of the entity's id attribute on the transaction
+	 * @param model  interface to deal with this entity
+	 */
+	getRelatedNameForTransaction: function(transaction, stringName, model) {
+		if(typeof transaction === "object" && transaction != null) {
+			if(typeof transaction.expand === "object" && transaction.expand != null && transaction.expand.hasOwnProperty(stringName)) {
+				return transaction.expand[stringName].name;
+			} else {
+				let m = model.getById(transaction[stringName]);
+				return (typeof m === "object" && m != null) ? m.name : "";
+			}
+		}
+		return "";
+	},
+
+	getCategoryName: function(transaction) {
+		return this.getRelatedNameForTransaction(transaction, "category", Category);
+	},
+
+	getWalletName: function(transaction) {
+		return this.getRelatedNameForTransaction(transaction, "wallet", Wallet);
+	},
+
+	/**
 	 * Gets the currency used by a transaction. Precondition: the transaction's
 	 * wallet and currency must be loaded.
 	 * @param transaction  a transaction with a wallet id
