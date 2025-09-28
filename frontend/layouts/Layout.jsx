@@ -1,5 +1,6 @@
 const m = require("mithril")
 
+const TransactionModal = require("../components/TransactionModal")
 const WalletsDropdown = require("../components/WalletsDropdown")
 
 require("./Layout.css")
@@ -27,6 +28,7 @@ module.exports = {
 				<div class="container"><a href="#" data-target="sidenav" class="top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
 			</header>), (
 			<main>
+				<TransactionModal />
 				{vnode.children}
 			</main>)];
 	},

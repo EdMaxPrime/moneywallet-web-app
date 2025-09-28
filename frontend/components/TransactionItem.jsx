@@ -2,6 +2,7 @@ const m = require("mithril")
 const Icon = require("./Icon.jsx")
 const MoneyAmount = require("./MoneyAmount.jsx")
 
+const Transaction = require("../models/Transaction.js")
 const Util = require("../models/index.js")
 
 const dayjs = require("../dayjs-lib")
@@ -18,7 +19,7 @@ module.exports = {
 				<Icon icon={c["icon"]} />
 
 				<span class="title">{c["name"]}</span>
-				<p>{t["description"]}</p>
+				<p onclick={() => Transaction.current = t}>{t["description"]}</p>
 
 				<p class="secondary-content">
 					<span class="red-text text-darken-1">
