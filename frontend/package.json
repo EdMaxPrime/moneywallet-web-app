@@ -15,6 +15,7 @@
     "dayjs": "^1.11.10",
     "esbuild": "0.17.19",
     "mithril": "^2.2.2",
+    "mithril-materialized": "^3.4.5",
     "pocketbase": "^0.21.0"
   },
   "devDependencies": {
