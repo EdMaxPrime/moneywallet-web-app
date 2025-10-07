@@ -13,6 +13,12 @@ var Category = {
 	DIRECTION_INCOME: 1, //same value as Transaction.direction
 	DIRECTION_BOTH: 2, //only used for Transfer category to exclude from some reports
 
+	CATEGORY_USER_EXPENSES: 0, //used by cash flow chart as a meta category
+	CATEGORY_USER_INCOME: 1, //used by cash flow chart as a meta category
+	CATEGORY_ALL_EXPENSES: 2, //used by cash flow chart as a meta category
+	CATEGORY_ALL_INCOME: 3, //used by cash flow chart as a meta category
+	CATEGORY_NET_INCOME: 4, //used by cash flow chart as a meta category
+
 	loadList: function() {
 		return pb.collection('categories').getFullList({
 			sort: 'index'
@@ -28,6 +34,30 @@ var Category = {
 		categories_list.forEach(category => {
 			Category.byId[ category["id"] ] = category;
 		});
+		Category.byId[Category.CATEGORY_ALL_INCOME] = {
+			id: Category.CATEGORY_ALL_INCOME,
+			name: "All Income",
+			icon: {type: "color", "name": "I", color: "#3495eb"},
+			type: Category.TYPE_INCOME,
+			show_in_report: true,
+			parent: "",
+		};
+		Category.byId[Category.CATEGORY_ALL_EXPENSES] = {
+			id: Category.CATEGORY_ALL_EXPENSES,
+			name: "All Expenses",
+			icon: {type: "color", "name": "E", color: "#c95d0a"},
+			type: Category.TYPE_INCOME,
+			show_in_report: true,
+			parent: "",
+		};
+		Category.byId[Category.CATEGORY_NET_INCOME] = {
+			id: Category.CATEGORY_NET_INCOME,
+			name: "Net Income",
+			icon: {type: "color", "name": "N", color: "#c95d0a"},
+			type: Category.CATEGORY_NET_INCOME,
+			show_in_report: true,
+			parent: "",
+		};
 
 		return categories_list;
 	},
@@ -49,6 +79,14 @@ var Category = {
 			category.children = Category.getTree(categories, category["id"]);
 		}
 		return tree_level;
+	},
+
+	getExpenseTree: function() {
+		return Category.getTree(Category.expense.concat([Category.getById(Category.CATEGORY_ALL_EXPENSES)]));
+	},
+
+	getIncomeTree: function() {
+		return Category.getTree(Category.income.concat([Category.getById(Category.CATEGORY_ALL_INCOME)]));
 	},
 
 	/**
