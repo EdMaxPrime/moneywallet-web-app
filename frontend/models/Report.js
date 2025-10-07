@@ -81,6 +81,12 @@ const Report = {
 		})
 	},
 	moneyPerCategoryCache: null,
+
+	getDailyCategorySpend: function(wallet) {
+		return pb.collection("categories_daily").getFullList({
+			filter: (wallet == "Total")? "" : pb.filter("wallets = {:wallet}", {wallet}),
+		})
+	},
 };
 
 module.exports = Report;

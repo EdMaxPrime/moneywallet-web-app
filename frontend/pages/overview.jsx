@@ -1,5 +1,6 @@
 const m = require("mithril")
 const HighchartsContainer = require("../components/HighchartsContainer")
+const CashflowInteractive = require("../components/CashflowInteractive")
 
 const Currency = require("../models/Currency")
 const Report = require("../models/Report")
@@ -307,11 +308,11 @@ module.exports = function() {
 						</div>
 						<div class="col s6 m4 input-field">
 							<label class="active">Wallet:</label>
-							<select class="browser-default">
+							<select class="browser-default" onchange={e => {allowChartUpdate=true; wallets=e.target.value}}>
 								{Wallet.list.map(function(wallet) {
-									return (<option value={wallet.id} key={wallet.id}>{wallet.name}</option>)
+									return (<option value={wallet.id} key={wallet.id} selected={wallets == wallet.id}>{wallet.name}</option>)
 								})}
-								<option value="Total" selected>Total</option>
+								<option value="Total" selected={wallets == "Total"}>Total</option>
 							</select>
 						</div>
 						<button class="col s12 btn waves-effect waves-light" type="submit">
@@ -324,6 +325,7 @@ module.exports = function() {
 						chartOptions={netWorthOptions} 
 						chartCreatedCallback={extendNetWorthChart}
 						allowChartUpdate={allowChartUpdate} />
+					<CashflowInteractive filters={{startDate: startDate, endDate: endDate, wallets: wallets}} grouping={grouping} />
 				</div>
 			);
 		}
