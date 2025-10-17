@@ -68,12 +68,16 @@ const groupBy = function(list, groupedKeys, aggregate) {
 
 
 /**
- * Test if two objects are equal based on their properties. No deep equality
+ * Test if two objects are equal based on their properties. No deep equality.
+ * Other types (booleans, numbers, and strings) are tested using equality operator
  * @param object1  an object
  * @param object2  an object
  * @return true if they are equal, false if not
  */
 const shallowEquals = function(object1, object2) {
+	if(object1 == object2) return true;
+	if(object1 == null || object2 == null || object1 === undefined || object2 === undefined) return false;
+
 	let keys1 = Object.keys(object1);
 	let keys2 = Object.keys(object2);
 
