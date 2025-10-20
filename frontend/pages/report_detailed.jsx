@@ -6,6 +6,7 @@ const TransactionHistogram = require("../components/TransactionHistogram")
 
 // Data model imports
 const Report = require("../models/Report")
+const Transaction = require("../models/Transaction")
 
 // Utility imports
 const dayjs = require("../dayjs-lib")
@@ -50,6 +51,9 @@ module.exports = function(initialVnode) {
 					</section>
 					<DataProvider fetch={getCategoryData} filter={vnode.attrs}>
 						<CategoryPieChart />
+					</DataProvider>
+					<DataProvider fetch={Transaction.getWithFilter} filter={vnode.attrs}>
+						<TransactionHistogram />
 					</DataProvider>
 				</div>);
 			} else {
