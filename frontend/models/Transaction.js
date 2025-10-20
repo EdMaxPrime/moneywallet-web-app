@@ -4,6 +4,9 @@ var Transaction = {
 	list: [],
 	current: {},
 
+	DIRECTION_EXPENSE: false,
+	DIRECTION_INCOME: true,
+
 	loadList: function() {
 		return pb.collection("transactions").getFullList().then(response => {
 			console.log("loaded full transaction list length="+response.length);
@@ -42,13 +45,29 @@ var Transaction = {
 		})
 	},
 
-	getByDates: function(startDate, endDate) {
+	/**
+	 * Asynchronous load transactions from the API. Only fetches transactions
+	 * which meet the filter's criteria. They are not cached.
+	 * 
+	 * @param filter  an object with these optional properties: 
+	 * startDate: string YYYY-MM-DD, 
+	 * endDate: string YYYY-MM-DD,
+	 * wallets: string id of the wallet
+	 * @return Promise that resolves to a list of Transaction objects
+	 */
+	getWithFilter: function(filter) {
+		let conditions = [];
+		if(filter.startDate) conditions.push("date >= {:startDate}");
+		if(filter.endDate) conditions.push("date <= {:endDate}");
+		if(filter.wallets) conditions.push("wallet = {:wallets}");
+		if(typeof filter.category == "string") conditions.push("category = {:category}");
+
 		return pb.collection("transactions").getFullList({
 			filter: pb.filter(
-				"date >= {:startDate} && date <= {:endDate}",
+				conditions.join(" && "),
 				{
-					startDate: startDate,
-					endDate: endDate,
+					startDate: filter.startDate,
+					endDate: filter.endDate,
 				})
 		});
 	},
