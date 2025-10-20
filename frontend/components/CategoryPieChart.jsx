@@ -220,7 +220,7 @@ module.exports = function(initialVnode) {
 				categoryPieCharts = createAllPieCharts(vnode.attrs.data);
 			}
 
-			return m("div", 
+			return m("div.card-panel", 
 				categoryPieCharts.map(categoryPieChartsRow => (
 					m("div.row", {key: categoryPieChartsRow.currencyName}, [
 						m("h3.col.s12", categoryPieChartsRow.currencyName),
