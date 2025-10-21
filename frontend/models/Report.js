@@ -1,4 +1,5 @@
 const pb = require("../api")
+const Transaction = require("./Transaction")
 const util = require("../util")
 
 const Report = {
@@ -10,40 +11,72 @@ const Report = {
 	},
 
 	/**
-	 * Fetches a list of transfers between wallets. Each record has
+	 * Fetches a list of transfers between wallets. Produces Highcharts points.
+	 * Each point in the list will have these properties:
+	 *   from: wallet name
+	 *   to: wallet name
+	 *   weight: a small number <= 1
+	 * @param filter  an object to filter the data, optionally by date or event
+	 * @return  list of point objects
 	 */
-	getTransferTotals: function() {
-		return pb.collection("transfers").getFullList({
-			fields: "expand.transaction_from.money,expand.transaction_from.expand.wallet.name,expand.transaction_from.expand.wallet.name,expand.transaction_to.expand.wallet.name",
-			filter: "confirmed = true",
-			expand: "transaction_from,transaction_from.wallet,transaction_to,transaction_to.wallet",
-		}).then(function(data) {
-			const walletPairs = data.map(function(transfer) {
-				return [
-					transfer.expand.transaction_from.expand.wallet.name, 
-					transfer.expand.transaction_to.expand.wallet.name, 
-					transfer.expand.transaction_from.money];
-			})
-			.reduce(function(groups, record) {
-				// group by
-				// create a group name
-				const groupName = record[0] + "\n" + record[1];
-				// fetch the matching group and add the weight to it
-				if(groups.hasOwnProperty(groupName)) {
-					groups[groupName] += record[2];
-				} else { // if it doesn't exist, create it
-					groups[groupName] = record[2];
-				}
-				return groups;
-			}, {});
+	getTransferTotals: function(filter) {
+		let conditions = ["confirmed = true"];
+		if(filter.startDate) conditions.push("date >= {:startDate}");
+		if(filter.endDate) conditions.push("date <= {:endDate}");
+		if(filter.event) conditions.push("event = {:event}");
 
-			// convert object into a list of lists
-			let result = [];
-			for(stringWalletPair in walletPairs) {
-				result.push(stringWalletPair.split("\n").concat(walletPairs[stringWalletPair]));
+		// get transfers, and their joined transactions
+		return pb.collection("transfers").getFullList({
+			fields: "expand.transaction_from.money,expand.transaction_from.wallet,expand.transaction_from.expand.wallet.name,expand.transaction_to.wallet,expand.transaction_to.money,expand.transaction_to.expand.wallet.name",
+			filter: pb.filter(conditions.join(" && "), filter),
+			expand: "transaction_from,transaction_from.wallet,transaction_to,transaction_to.wallet",
+		}).then(function(response) {
+			// create Highcharts points from the data
+			// first, flatten the nested object to be one level deep (map)
+			// second, group similar transfers to have a sum of money between each unique pair of wallets (groupBy)
+			// third, sort the points by relative weight
+			// fourth, scale the weights to be smaller, otherwise the edges will look weird
+			let points = util.groupBy(
+				response.map(function(transfer) {
+					return {
+						from_wallet_id: transfer.expand.transaction_from.wallet,
+						from_wallet_name: transfer.expand.transaction_from.expand.wallet.name,
+						from_money: transfer.expand.transaction_from.money,
+						to_wallet_id: transfer.expand.transaction_to.wallet,
+						to_wallet_name: transfer.expand.transaction_to.expand.wallet.name,
+						to_money: transfer.expand.transaction_to.money,
+					};
+				}),
+				["from_wallet_id", "to_wallet_id"],
+				function(wallet_ids, transfers) {
+					return {
+						from: transfers[0].from_wallet_name,
+						to: transfers[0].to_wallet_name,
+						// it is fine to sum the money like this, even though it is of many currencies, because we only need a relative number
+						weight: transfers.reduce(function(sum, current) {return sum + current.from_money}, 0),
+						custom: {
+							from: {
+								wallet: wallet_ids[0],
+								money: transfers.reduce(function(sum, current) {return sum + current.from_money}, 0),
+								direction: Transaction.DIRECTION_EXPENSE,
+							},
+							to: {
+								wallet: wallet_ids[1],
+								money: transfers.reduce(function(sum, current) {return sum + current.to_money}, 0),
+								direction: Transaction.DIRECTION_INCOME,
+							}
+						},
+					};
+				}
+			).sort(function(a, b) {
+				return a.weight - b.weight
+			});
+			// scale the edge weights
+			for(let i = 0; i < points.length; i++) {
+				points[i].weight = (i + 1) / points.length;
 			}
-			return result;
-		})
+			return points;
+		});
 	},
 
 	/**

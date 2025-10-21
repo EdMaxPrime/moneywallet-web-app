@@ -3,6 +3,7 @@ const m = require("mithril")
 const DataProvider = require("../components/DataProvider")
 const CategoryPieChart = require("../components/CategoryPieChart")
 const TransactionHistogram = require("../components/TransactionHistogram")
+const TransfersChart = require("../components/TransfersChart")
 
 // Data model imports
 const Report = require("../models/Report")
@@ -54,6 +55,9 @@ module.exports = function(initialVnode) {
 					</DataProvider>
 					<DataProvider fetch={Transaction.getWithFilter} filter={vnode.attrs}>
 						<TransactionHistogram />
+					</DataProvider>
+					<DataProvider fetch={Report.getTransferTotals} filter={vnode.attrs} >
+						<TransfersChart />
 					</DataProvider>
 				</div>);
 			} else {
