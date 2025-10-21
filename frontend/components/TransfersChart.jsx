@@ -1,11 +1,10 @@
 // Presentation layer imports
 const m = require("mithril")
 const HighchartsContainer = require("../components/HighchartsContainer")
-const Icon = require("../components/Icon")
+const WalletChip = require("../components/WalletChip")
 
 // Data layer imports
 const Model = require("../models/index")
-const Wallet = require("../models/Wallet")
 
 
 /**
@@ -27,7 +26,6 @@ const Wallet = require("../models/Wallet")
  */
 module.exports = {
 	view: function(vnode) {
-		console.log("rendering chart");
 		// create table here and calculate totals for the last row, to keep the view code cleaner
 		const tableBodyRows = []; // list of vnodes
 		const totalCounts = {}; // map where keys are currency IDs and values are money amounts
@@ -35,8 +33,8 @@ module.exports = {
 			// create table row
 			const sameCurrency = Model.getCurrencyOfTransaction(point.custom.from) == Model.getCurrencyOfTransaction(point.custom.to);
 			tableBodyRows.push(m("tr", {key: point.from + point.to}, [
-				m("td", [m(Icon, {icon: Wallet.getById(point.custom.from.wallet).icon}), point.from]),
-				m("td", [m(Icon, {icon: Wallet.getById(point.custom.to.wallet).icon}), point.to]),
+				m("td", m(WalletChip, {id: point.custom.from.wallet})),
+				m("td", m(WalletChip, {id: point.custom.to.wallet})),
 				m("td", Model.formatTransactionAmount(point.custom.from) + (sameCurrency? "" : " (" + Model.formatTransactionAmount(point.custom.to) + ")"))
 			]));
 
