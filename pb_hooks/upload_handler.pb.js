@@ -58,7 +58,23 @@ routerAdd("POST", "/json-upload", (c) => {
 			"errors": []
 		},
 	};
+
 	try {
+		// first, create data source
+		let dataSourceId = "";
+		try {
+			const dataSourceCollection = $app.dao().findCollectionByNameOrId("data_source");
+			const dataSourceRecord = new Record(dataSourceCollection);
+			dataSourceRecord.set("user", requestInfo.authRecord.getString("id"));
+			dataSourceRecord.set("type", "json_import");
+			const form = new RecordUpsertForm($app, dataSourceRecord);
+			form.submit();
+			dataSourceId = dataSourceRecord.getId();
+		} catch(createException) {
+			console.error("Could not create data source record during json import", createException);
+		}
+
+		// read file
 		const contents = readerToString(multipartFile);
 		const jsonContents = JSON.parse(contents);
 		const jsonUUIDToPocketbaseId = {}; //map IDs from JSON file to new IDs made by Pocketbase
@@ -71,9 +87,10 @@ routerAdd("POST", "/json-upload", (c) => {
 			for(let i = 0; i < jsonContents.wallets.length; i++) {
 				// find an existing wallet with this name, otherwise create new one
 				let record = existingWallets.filter(
-					wallet => wallet.getString("name") == jsonContents.wallets[i].name);
+					wallet => wallet.getString("uuid") == jsonContents.wallets[i].id);
 				if(record.length == 0) {
 					record = new Record(walletCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -89,6 +106,7 @@ routerAdd("POST", "/json-upload", (c) => {
 						"name" : jsonContents.wallets[i].name,
 						"start_money" : jsonContents.wallets[i].start_money,
 						"user_owner" : requestInfo.authRecord.getString("id"),
+						"uuid" : jsonContents.wallets[i].id,
 					});
 					form.submit();
 					jsonUUIDToPocketbaseId[jsonContents.wallets[i].id] = record.getId(); // associate old ID with new one
@@ -111,6 +129,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					category => category.getString("uuid") == jsonContents.categories[i].id);
 				if(record.length == 0) {
 					record = new Record(categoryCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -166,6 +185,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					event => event.getString("uuid") == jsonContents.events[i].id);
 				if(record.length == 0) {
 					record = new Record(eventsCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -203,6 +223,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					place => place.getString("uuid") == jsonContents.places[i].id);
 				if(record.length == 0) {
 					record = new Record(placesCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -240,6 +261,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					people => people.getString("uuid") == jsonContents.people[i].id);
 				if(record.length == 0) {
 					record = new Record(peopleCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -282,6 +304,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					transaction => transaction.getString("uuid") == jsonContents.transactions[i].id);
 				if(record.length == 0) {
 					record = new Record(transactionCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
@@ -333,6 +356,7 @@ routerAdd("POST", "/json-upload", (c) => {
 					transfer => transfer.getString("uuid") == jsonContents.transfers[i].id);
 				if(record.length == 0) {
 					record = new Record(transferCollection);
+					record.set("data_source", dataSourceId); // identify the record's origin
 				} else {
 					record = record[0];
 				}
