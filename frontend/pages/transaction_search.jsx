@@ -23,7 +23,7 @@ const searchEventListener = function(search) {
 const convertSearchQueryToFetchArg = function(searchQuery) {
 	let optionalFilter = ["description ~ '" + searchQuery.searchTerm + "'"]; // these are joined by logical OR
 	let requiredFilter = []; // these are joined by logical AND
-	let expand = []; // related objects that need to be queried, such as the place
+	let expand = ["data_source"]; // related objects that need to be queried, such as the place
 
 	// construct optional filter
 	if(searchQuery.matchNote) {

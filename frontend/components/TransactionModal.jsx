@@ -45,6 +45,7 @@ module.exports = function() {
 							iconName: "category",
 							label: "Category",
 							oninput: () => {},
+							onclick: () => {console.log("click")},
 							readonly: true,
 							value: Models.getCategoryName(Transaction.current),
 						}),
@@ -69,6 +70,33 @@ module.exports = function() {
 							value: Models.getWalletName(Transaction.current),
 						}),
 					]),
+					(Transaction.current.event != "") && m("div.col.s12", [
+						m(TextInput, {
+							iconName: "flag",
+							label: "Event",
+							oninput: () => {},
+							readonly: true,
+							value: Models.getEventName(Transaction.current),
+						})
+					]),
+					(Array.isArray(Transaction.current.people) && Transaction.current.people.length > 0) && m("div.col.s12", [
+						m(TextInput, {
+							iconName: "group",
+							label: "People",
+							oninput: () => {},
+							readonly: true,
+							value: Models.getPeopleNames(Transaction.current),
+						})
+					]),
+					(Transaction.current.place != "") && m("div.col.s12", [
+						m(TextInput, {
+							iconName: "location_on",
+							label: "Place",
+							oninput: () => {},
+							readonly: true,
+							value: Models.getPlaceName(Transaction.current),
+						})
+					]),
 					m("div.col.s12", [
 						m(TextInput, {
 							iconName: "comment",
@@ -77,6 +105,15 @@ module.exports = function() {
 							readonly: true,
 							value: Transaction.current.note,
 						}),
+					]),
+					(Transaction.current.data_source != "") && m("div.col.s12", [
+						m(TextInput, {
+							iconName: "upload",
+							label: "Data Source",
+							oninput: () => {},
+							readonly: true,
+							value: Models.getDataSourceName(Transaction.current),
+						})
 					]),
 				]),
 				buttons: [

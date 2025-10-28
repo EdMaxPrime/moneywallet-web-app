@@ -2,38 +2,78 @@ const pb = require("../api.js")
 const Budget = require("./Budget.js")
 const Category = require("./Category.js")
 const Currency = require("./Currency.js")
+const DataSource = require("./DataSource.js")
+const Event = require("./Event.js")
+const People = require("./People.js")
+const Place = require("./Place.js")
 const Transaction = require("./Transaction.js")
 const Wallet = require("./Wallet.js")
 
+
+const getRelatedEntityForTransaction = function(transaction, stringName, model) {
+	if(typeof transaction === "object" && transaction != null) {
+		if(typeof transaction.expand === "object" && transaction.expand != null && transaction.expand.hasOwnProperty(stringName)) {
+			return transaction.expand[stringName];
+		} else {
+			return model.getById(transaction[stringName]);
+		}
+	}
+	return null;
+};
+
+/**
+ * Get the name of a related entity. For example, a transaction's wallet's name
+ * @param transaction  can be null
+ * @param stringName  the name of the entity's id attribute on the transaction
+ * @param model  interface to deal with this entity
+ * @return  if there is no entity, return "". If there is one entity, return
+ * it's name. If there are multiple, return their names joined by commas.
+ */
+const getRelatedNameForTransaction = function(transaction, stringName, model) {
+	// if(typeof transaction === "object" && transaction != null) {
+	// 	if(typeof transaction.expand === "object" && transaction.expand != null && transaction.expand.hasOwnProperty(stringName)) {
+	// 		return transaction.expand[stringName].name;
+	// 	} else {
+	// 		let m = model.getById(transaction[stringName]);
+	// 		return (typeof m === "object" && m != null) ? m.name : "";
+	// 	}
+	// }
+	// return "";
+	const entity = getRelatedEntityForTransaction(transaction, stringName, model);
+	if(entity == null) { return ""; }
+	else if(Array.isArray(entity)) { return entity.map(e => e.name).join(", "); }
+	else { return entity.name; }
+};
+
+
 module.exports = {
 	getCategoryOfTransaction: function(transaction) {
-		return Category.getById(transaction["category"]);
-	},
-
-	/**
-	 * Get the name of a related entity. For example, a transaction's wallet's name
-	 * @param transaction  can be null
-	 * @param stringName  the name of the entity's id attribute on the transaction
-	 * @param model  interface to deal with this entity
-	 */
-	getRelatedNameForTransaction: function(transaction, stringName, model) {
-		if(typeof transaction === "object" && transaction != null) {
-			if(typeof transaction.expand === "object" && transaction.expand != null && transaction.expand.hasOwnProperty(stringName)) {
-				return transaction.expand[stringName].name;
-			} else {
-				let m = model.getById(transaction[stringName]);
-				return (typeof m === "object" && m != null) ? m.name : "";
-			}
-		}
-		return "";
+		return getRelatedEntityForTransaction(transaction, "category", Category);
 	},
 
 	getCategoryName: function(transaction) {
-		return this.getRelatedNameForTransaction(transaction, "category", Category);
+		return getRelatedNameForTransaction(transaction, "category", Category);
 	},
 
 	getWalletName: function(transaction) {
-		return this.getRelatedNameForTransaction(transaction, "wallet", Wallet);
+		return getRelatedNameForTransaction(transaction, "wallet", Wallet);
+	},
+
+	getEventName: function(transaction) {
+		return getRelatedNameForTransaction(transaction, "event", Event);
+	},
+
+	getPeopleNames: function(transaction) {
+		return getRelatedNameForTransaction(transaction, "people", People);
+	},
+
+	getPlaceName: function(transaction) {
+		return getRelatedNameForTransaction(transaction, "place", Place);
+	},
+
+	getDataSourceName: function(transaction) {
+		const d = getRelatedEntityForTransaction(transaction, "data_source", DataSource);
+		if(d != null) {return d.type + " on " + d.created;}
 	},
 
 	/**
@@ -89,6 +129,9 @@ module.exports = {
 			}); 
 			Currency.loadListHelper(currencies);
 			Wallet.loadListHelper(data.expand.wallets_via_user_owner);
+			Event.loadListHelper(data.expand.events_via_user_owner);
+			People.loadListHelper(data.expand.people_via_user_owner);
+			Place.loadListHelper(data.expand.places_via_user_owner);
 
 			return data;
 		}).bind(this);
@@ -98,7 +141,7 @@ module.exports = {
 		}
 
 		return pb.collection("users").getOne(pb.authStore.model.id, {
-			expand: "wallets_via_user_owner.currency,categories_via_user_owner",
+			expand: "wallets_via_user_owner.currency,categories_via_user_owner,events_via_user_owner,places_via_user_owner,people_via_user_owner",
 		}).then(callback)
 		.catch(function(error) {
 			console.log("Load parent entities", error);
