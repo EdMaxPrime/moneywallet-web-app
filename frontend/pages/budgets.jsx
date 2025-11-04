@@ -1,6 +1,7 @@
 // Mithril Component imports
 const m = require("mithril")
 const BudgetSummary = require("../components/BudgetSummary.jsx")
+const {Tabs} = require("mithril-materialized")
 
 // Pocketbase API imports
 const Budget = require("../models/Budget")
@@ -29,13 +30,30 @@ module.exports = function() {
 		view: function() {
 			if (status == READY) {
 				// show list of active running budgets
-				return m("div", {}, Budget.running.map(budget => {
-					return m(BudgetSummary, {
-						key: budget.budget_id, 
-						budget: budget, 
-						name: Util.budgetName(budget),
-					});
-				}));
+				return m(Tabs, {
+					tabs: [
+						{
+							title: "Running",
+							vnode: m("div", {}, Budget.running.map(budget => {
+								return m(BudgetSummary, {
+									key: budget.budget_id, 
+									budget: budget, 
+									name: Util.budgetName(budget),
+								})
+							}))
+						},
+						{
+							title: "Expired",
+							vnode: m("div", {}, Budget.expired.map(budget => {
+								return m(BudgetSummary, {
+									key: budget.budget_id, 
+									budget: budget, 
+									name: Util.budgetName(budget),
+								})
+							}))
+						}
+					]
+				});
 			}
 			else if (status == WAITING) {
 				return m("div", "Loading...");
