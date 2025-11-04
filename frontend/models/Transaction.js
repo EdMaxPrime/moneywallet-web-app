@@ -34,18 +34,6 @@ var Transaction = {
 	},
 
 	/**
-	 * Retrieves transactions that belong to a set of categories
-	 * @param categories a list of strings, each is a category id
-	 */
-	getByCategory: function(categories) {
-		return pb.collection("transactions").getList(1, 30, {
-			filter: categories.map(category => "category = \"" + category + "\"").join(" || ")
-		}).then(response => {
-			return response.items;
-		})
-	},
-
-	/**
 	 * Asynchronous load transactions from the API. Only fetches transactions
 	 * which meet the filter's criteria. They are not cached.
 	 * 

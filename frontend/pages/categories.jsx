@@ -1,52 +1,24 @@
+// Presentation layer imports
 const m = require("mithril")
-const Icon = require("../components/Icon.jsx")
-const Tabs = require("../components/Tabs.jsx")
-const Tree = require("../components/Tree.jsx")
-
-const Category = require("../models/Category")
+const CategoryPicker = require("../components/CategoryPicker.jsx")
 
 
-const linkToCategoryPage = function(category) {
-	return {href: "/category/" + category["id"]};
+
+
+/**
+ * This component shows all the categories. When you click on a category, you
+ * will be sent to the page devoted to that category. Can be improved with real
+ * links instead of an event listener.
+ */
+module.exports = {
+	view: function(vnode) {
+		return m(CategoryPicker, {
+			multiple: false,
+			showMetaCategories: false,
+			selectedIds: [],
+			onselection: function(selectedIds) {
+				m.route.set("/category/" + selectedIds[0]);
+			},
+		});
+	}
 }
-
-module.exports = (function() {
-	// state variable to control the tabs
-	let tabs = null;
-
-	return {
-		oninit: function() {
-			Category.loadList().then(m.redraw);
-		},
-		oncreate: function(vnode) {
-			
-		},
-		onremove: function(vnode) {
-			if(tabs != null) tabs.destroy();
-		},
-		view: function() {
-			return (
-					<Tabs labels={["Income", "Expense", "System"]}>
-						<div id="income-categories-tree" class="col s12">
-							<Tree 
-								nodes={Category.getTree(Category.income)}
-								component={m.route.Link}
-								generateComponentAttributes={linkToCategoryPage} />
-						</div>
-						<div id="expense-categories-tree" class="col s12">
-							<Tree 
-								nodes={Category.getTree(Category.expense)}
-								component={m.route.Link}
-								generateComponentAttributes={linkToCategoryPage} />
-						</div>
-						<div id="system-categories-tree" class="col s12">
-							<Tree 
-								nodes={Category.getTree(Category.system)}
-								component={m.route.Link}
-								generateComponentAttributes={linkToCategoryPage} />
-						</div>
-					</Tabs>
-			);
-		}
-	};
-})
