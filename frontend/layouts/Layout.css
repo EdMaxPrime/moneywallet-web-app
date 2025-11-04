@@ -3,8 +3,15 @@ header, main, footer {
   padding-left: 300px;
 }
 
+/* Account for side bar being collapsed on small screens */
 @media only screen and (max-width : 992px) {
   header, main, footer {
-    padding-left: 0;
+    padding-left: 60px;
   }
+}
+
+/* Remove whitespace between the top of the page and the title of each page (also affects sidebar logo) */
+header h1 {
+  margin-top: 0;
+  padding-top: 0;
 }

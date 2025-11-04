@@ -40,6 +40,16 @@ var Wallet = {
 	},
 
 	/**
+	 * Creates a sorted list of all wallets by user preference
+	 * @return list of Wallet objects
+	 */
+	getOrderedList: function() {
+		return Wallet.list.toSorted(function(a, b) {
+			return a.index - b.index;
+		})
+	},
+
+	/**
 	 * Clear all properties of the currently edited Wallet model.
 	 * This will reset all forms that read from this.
 	 */
