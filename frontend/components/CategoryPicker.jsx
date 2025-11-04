@@ -1,7 +1,5 @@
 const m = require("mithril")
 const CategoryItem = require("./CategoryItem")
-const TabsOld = require("../components/Tabs.jsx")
-const Tree = require("../components/Tree.jsx")
 const {MaterialIcon, Tabs} = require("mithril-materialized")
 
 const Category = require("../models/Category")

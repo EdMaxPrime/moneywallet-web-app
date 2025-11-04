@@ -1,5 +1,6 @@
 const m = require("mithril")
 const HighchartsContainer = require("./HighchartsContainer")
+require("mithril-materialized/utilities.css")
 
 const Util = require("../models/index")
 
