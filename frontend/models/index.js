@@ -87,18 +87,35 @@ module.exports = {
 	},
 
 	/**
+	 * Gets the currency used by a wallet. If the wallet or the currency do not
+	 * exist, the return value will be false-y.
+	 * @param walletId  string ID of the wallet
+	 * @return a Currency object
+	 */
+	getCurrencyOfWallet: function(walletId) {
+		const wallet = Wallet.getById(walletId);
+		if(wallet) {
+			return Currency.getById(wallet["currency"]);
+		}
+		return null;
+	},
+
+	/**
 	 * Formats a money amount as human-readable. Precondition: the currency must
 	 * be loaded.
 	 * @param money  a positive integer, not premultiplied by the currency's 
 	 * cents/dollars system
 	 * @param currencyId  the string id of the currency, or the Currency object
+	 * @param numberOnly  default false, which includes the currency symbol.
+	 * True to exclude the currency symbol
 	 * @return  string
 	 */
-	formatMoneyAmount: function(money, currencyId) {
+	formatMoneyAmount: function(money, currencyId, numberOnly) {
 		const currency = typeof currencyId == "string" ? Currency.getById(currencyId) : currencyId;
 		let amount = (typeof money == "number")? money.toString() : money;
 		amount = amount.padStart(currency["decimals"] + 1, "0"); // pad with leading zeroes
-		return currency["symbol"] + 
+		const currencySymbol = numberOnly? "" : currency["symbol"];
+		return currencySymbol + 
 			amount.substring(0, amount.length - currency["decimals"]) + 
 			"." +
 			amount.substring(amount.length - currency["decimals"]);
