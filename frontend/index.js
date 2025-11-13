@@ -6,6 +6,7 @@ This file sets up the Single Page Application using the Mithril framework. All
 // Mithril Page Imports
 const m = require("mithril")
 const Budgets = require("./pages/budgets.jsx")
+const BudgetAdd = require("./pages/budget_add.jsx")
 const BudgetDetails = require("./pages/budget_details.jsx")
 const Categories = require("./pages/categories.jsx")
 const CategoryView = require("./pages/category_view.jsx")
@@ -118,6 +119,7 @@ m.route(document.body, "/register", {
 	"/report/categories": loginAndDataRequired(ReportCategories, "Categories Report"),
 	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
 	"/budget/:budget_id": loginAndDataRequired(BudgetDetails, parameters => Util.budgetName(parameters.budget_id)),
+	"/budgets/new": loginAndDataRequired(BudgetAdd, "New Budget"),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/settings": loginAndDataRequired(Settings, "Settings"),
 	"/register": Register,

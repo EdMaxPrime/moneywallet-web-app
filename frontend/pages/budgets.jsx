@@ -1,7 +1,7 @@
 // Mithril Component imports
 const m = require("mithril")
 const BudgetSummary = require("../components/BudgetSummary.jsx")
-const {Tabs} = require("mithril-materialized")
+const {Tabs, Button} = require("mithril-materialized")
 
 // Pocketbase API imports
 const Budget = require("../models/Budget")
@@ -34,13 +34,16 @@ module.exports = function() {
 					tabs: [
 						{
 							title: "Running",
-							vnode: m("div", {}, Budget.running.map(budget => {
-								return m(BudgetSummary, {
-									key: budget.budget_id, 
-									budget: budget, 
-									name: Util.budgetName(budget),
+							vnode: m("div", {}, [
+								m(Button, {label: "New budget", iconName: "add", iconClass: "left", href: m.route.prefix+"/budgets/new"}),
+								Budget.running.map(budget => {
+									return m(BudgetSummary, {
+										key: budget.budget_id, 
+										budget: budget, 
+										name: Util.budgetName(budget),
+									})
 								})
-							}))
+							])
 						},
 						{
 							title: "Expired",
