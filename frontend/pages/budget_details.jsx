@@ -55,7 +55,6 @@ module.exports = function() {
 					cummulativeSum.push([dayjs(transaction.date).valueOf(), transaction.money + sum]);
 					return cummulativeSum;
 				}, []);
-				console.log("series data", chartSeriesData);
 			})
 			.catch(function(error) {
 				console.log("error fetching budget", error);

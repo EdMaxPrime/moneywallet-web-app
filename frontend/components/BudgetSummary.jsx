@@ -24,7 +24,6 @@ module.exports = {
 		const money = Math.abs(vnode.attrs.budget.money);
 		const currencyId = vnode.attrs.budget.currency;
 
-		console.log(vnode.attrs.budget.end_date, dayjs(vnode.attrs.budget.end_date).fromNow());
 
 		return m("div.card", [
 			m("div.card-content", [
