@@ -10,6 +10,7 @@ const Wallet = require("../models/Wallet")
 
 // CSS
 require("./Layout.css")
+require("mithril-materialized/utilities.css") // for colors
 
 
 /**
@@ -40,7 +41,7 @@ module.exports = {
 		const route = m.route.get();
 		return [
 			m("header", [
-				m("nav", m("h1", vnode.attrs.title)),
+				m("nav", m("h1.green.accent-1", vnode.attrs.title)),
 				m(Sidenav, {
 					isOpen: true,
 					position: "left",
@@ -84,6 +85,8 @@ module.exports = {
 					m(SidenavItem, {divider: true}),
 					menuItemFactory("Import Data", "upload", "/import"),
 					menuItemFactory("Settings", "settings", "/settings"),
+					m(SidenavItem, {divider: true}),
+					menuItemFactory("Sign out", "logout", "/logout"),
 				]),
 				m("div.container", 
 					m("a.top-nav.sidenav-trigger.full.hide-on-large-only",
