@@ -21,6 +21,7 @@ const ReportCategories = require("./pages/report_detailed.jsx")
 const Settings = require("./pages/settings.jsx")
 const Transactions = require("./pages/transactions.jsx")
 const TransactionSearch = require("./pages/transaction_search.jsx")
+const Welcome = require("./pages/welcome.jsx")
 
 // Pocketbase API imports
 const pb = require("./api")
@@ -122,6 +123,7 @@ m.route(document.body, "/register", {
 	"/budgets/new": loginAndDataRequired(BudgetAdd, "New Budget"),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/settings": loginAndDataRequired(Settings, "Settings"),
+	"/welcome": loginAndDataRequired(Welcome, "Welcome"),
 	"/register": Register,
 	"/login": Login,
 	"/logout": loginRequired(Logout),
