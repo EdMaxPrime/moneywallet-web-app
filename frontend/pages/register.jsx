@@ -1,7 +1,8 @@
 const m = require("mithril");
 const Layout = require("../layouts/no_login.jsx");
+const {EmailInput, PasswordInput} = require("mithril-materialized");
 
-const pb = require("../api");
+const User = require("../models/User");
 
 
 module.exports = (function() {
@@ -14,16 +15,48 @@ module.exports = (function() {
 	    "name": "user 1"
 	};
 
+	let errors = {
+		email: {
+			wrong: false,
+			value: "",
+			message: "",
+		},
+		password: {
+			wrong: false,
+			value: "",
+			message: "",
+		},
+		passwordConfirm: {
+			wrong: false,
+			value: "",
+			message: "",
+		}
+	}
+
 	let showError = false;
 
 	function register(event) {
 		event.preventDefault();
 
-		pb.collection('users').create(user).then(function(record) {
-			console.log(record);
+		User.create(user).then(function(record) {
+			for(let key in errors) {
+				errors[key]["wrong"] = false;
+			}
+			User.login(user.email, user.password).then(function() {
+				m.route.set("/welcome");
+			}).catch(function() {
+				m.route.set("/login");
+			});
 		}).catch(function(error) {
 			showError = true;
 			console.log(error);
+			if(error.data) {
+				for(key in error.data.data) {
+					errors[key]["wrong"] = true;
+					errors[key]["value"] = user[key];
+					errors[key]["message"] = error.data.data[key]["message"];
+				} 
+			}
 			m.redraw();
 		})
 	};
@@ -33,24 +66,30 @@ module.exports = (function() {
 			return (<Layout>
 				<h1>Create Account</h1>
 				{showError && (
-					<div class="card-panel red accent-1"><span class="material-icons outlined">error</span>&nbsp; There was an error signing up</div>
+					<div class="card-panel red accent-1"><span class="material-icons outlined">error</span>&nbsp; There was an error signing up. {errors.email.message.length > 0 && ("Email: " + errors.email.message)} {errors.password.message.length > 0 && ("Password: " + errors.password.message)}</div>
 				)}
 				<div class="row">
 					<form class="col s12" onsubmit={register}>
-						<div class="input-field">
-							<input id="signup_email" type="email" class="validate" oninput={function(e) {user.email = e.target.value;}}></input>
-							<label for="signup_email">Email</label>
-						</div>
-						<div class="input-field">
-							<input id="signup_password" type="password" class="validate" oninput={function(e) {user.password = e.target.value;}}></input>
-							<label for="signup_password">Password</label>
-							<span class="helper-text">Password should be at least 8 characters</span>
-						</div>
-						<div class="input-field">
-							<input id="signup_password_confirm" type="password" class="validate" oninput={function(e) {user.passwordConfirm = e.target.value;}}></input>
-							<label for="signup_password_confirm">Confirm password by typing it again</label>
-							<span class="helper-text" data-error="passwords don't match"/>
-						</div>
+						<EmailInput 
+							label="Email (used for essential communication only, such as a password reset)" 
+							value={user.email} 
+							oninput={v => user.email = v}
+							validate={v => !(errors.email.wrong && errors.email.value == v)}
+							dataError={errors.email.message} />
+						<PasswordInput 
+							label="Password" 
+							value={user.password} 
+							oninput={v => user.password = v} 
+							helperText="Must be at least 8 characters long"
+							validate={v => !(errors.password.wrong && errors.password.value == v)}
+							dataError={errors.password.message} />
+						<PasswordInput 
+							label="Confirm Password" 
+							value={user.passwordConfirm} 
+							oninput={v => user.passwordConfirm = v} 
+							helperText="Confirm password by typing it again" 
+							dataError="Passwords don't match, please write it exactly the same"
+							validate={v => v == user.password && !(errors.passwordConfirm.wrong && errors.passwordConfirm.value == v)} />
 						<button class="btn waves-effect waves-light" type="submit">Register</button>
 					</form>
 					<p class="col s12">Already have an account? <m.route.Link href="/login">Login</m.route.Link></p>

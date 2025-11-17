@@ -1,9 +1,9 @@
 const m = require("mithril")
-const pb = require("../api")
+const User = require("../models/User")
 
 module.exports = {
 	view: function() {
-		pb.authStore.clear();
+		User.logout();
 		m.route.set("/login", {}, {replace: true});
 	}
 };

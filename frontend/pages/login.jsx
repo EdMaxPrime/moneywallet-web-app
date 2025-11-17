@@ -1,16 +1,17 @@
 const m = require("mithril");
 const Layout = require("../layouts/no_login.jsx");
+const {EmailInput, PasswordInput} = require("mithril-materialized");
 
-const pb = require("../api");
+const User = require("../models/User");
 
 module.exports = (function() {
 	let email = "", password = "";
 	let errorMessage = "";
 
 	function login() {
-		pb.collection('users').authWithPassword(email, password)
+		User.login(email, password)
 		.then(function() {
-			console.log(pb.authStore);
+			errorMessage = "";
 			m.route.set("/transactions");
 		}).catch(function(error) {
 			errorMessage = error.message;
@@ -27,14 +28,8 @@ module.exports = (function() {
 				)}
 				<div class="row">
 					<form class="col s12" onsubmit={login}>
-						<div class="input-field">
-							<input id="signup_email" type="email" class="validate" oninput={function(e) {email = e.target.value;}}></input>
-							<label for="signup_email">Email</label>
-						</div>
-						<div class="input-field">
-							<input id="signup_password" type="password" class="validate" oninput={function(e) {password = e.target.value;}}></input>
-							<label for="signup_password">Password</label>
-						</div>
+						<EmailInput label="Email" value={email} onchange={v => email = v} />
+						<PasswordInput label="Password" value={password} onchange={v => password = v} />
 						<button class="btn waves-effect waves-light" type="submit">Login</button>
 					</form>
 					<p class="col s12">Don't have an account yet? <m.route.Link href="/register">Register</m.route.Link></p>
