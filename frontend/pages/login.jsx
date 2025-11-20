@@ -28,8 +28,8 @@ module.exports = (function() {
 				)}
 				<div class="row">
 					<form class="col s12" onsubmit={login}>
-						<EmailInput label="Email" value={email} onchange={v => email = v} />
-						<PasswordInput label="Password" value={password} onchange={v => password = v} />
+						<EmailInput label="Email" value={email} oninput={v => email = v} />
+						<PasswordInput label="Password" value={password} oninput={v => password = v} />
 						<button class="btn waves-effect waves-light" type="submit">Login</button>
 					</form>
 					<p class="col s12">Don't have an account yet? <m.route.Link href="/register">Register</m.route.Link></p>
