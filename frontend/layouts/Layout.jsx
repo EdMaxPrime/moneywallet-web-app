@@ -82,6 +82,7 @@ module.exports = {
 					menuItemFactory("Categories", "category", "/categories"),
 					menuItemFactory("Overview", "bar_chart", "/overview"),
 					menuItemFactory("Budgets", "money_bag", "/budgets"),
+					menuItemFactory("Events", "flag", "/events"),
 					m(SidenavItem, {divider: true}),
 					menuItemFactory("Import Data", "upload", "/import"),
 					menuItemFactory("Settings", "settings", "/settings"),

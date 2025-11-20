@@ -11,6 +11,8 @@ const BudgetDetails = require("./pages/budget_details.jsx")
 const Categories = require("./pages/categories.jsx")
 const CategoryView = require("./pages/category_view.jsx")
 const CreateWallet = require("./pages/create_wallet.jsx")
+const Events = require("./pages/events.jsx")
+const EventDetails = require("./pages/event_details.jsx")
 const JsonImport = require("./pages/import.jsx")
 const Layout = require("./layouts/Layout.jsx")
 const Login = require("./pages/login.jsx")
@@ -121,6 +123,8 @@ m.route(document.body, "/register", {
 	"/budgets": loginAndDataRequired(Budgets, "Budgets"),
 	"/budget/:budget_id": loginAndDataRequired(BudgetDetails, parameters => Util.budgetName(parameters.budget_id)),
 	"/budgets/new": loginAndDataRequired(BudgetAdd, "New Budget"),
+	"/events": loginAndDataRequired(Events, "Events"),
+	"/event/:event_id": loginAndDataRequired(EventDetails, "Event Report"),
 	"/import": loginAndDataRequired(JsonImport, "JSON Import"),
 	"/settings": loginAndDataRequired(Settings, "Settings"),
 	"/welcome": loginAndDataRequired(Welcome, "Welcome"),
