@@ -49,14 +49,13 @@ var Transaction = {
 		if(filter.endDate) conditions.push("date <= {:endDate}");
 		if(filter.wallets) conditions.push("wallet = {:wallets}");
 		if(typeof filter.category == "string") conditions.push("category = {:category}");
+		if(filter.event) conditions.push("event = {:event}");
+		if(filter.confirmed === true || filter.confirmed === false) conditions.push("confirmed = {:confirmed}");
 
 		return pb.collection("transactions").getFullList({
 			filter: pb.filter(
 				conditions.join(" && "),
-				{
-					startDate: filter.startDate,
-					endDate: filter.endDate,
-				})
+				filter)
 		});
 	},
 
