@@ -1,5 +1,6 @@
 const pb = require("../api")
 const Transaction = require("./Transaction")
+const Wallet = require("./Wallet")
 const util = require("../util")
 
 const Report = {
@@ -119,6 +120,27 @@ const Report = {
 		return pb.collection("categories_daily").getFullList({
 			filter: (wallet == "Total")? "" : pb.filter("wallets = {:wallet}", {wallet}),
 		})
+	},
+
+	/**
+	 * Transforms a list of transactions to the data type expected by the Category Pie Chart
+	 * 
+	 * @param transactions  a list of Transaction objects
+	 * 
+	 * @return a list of objects with these properties: currencyId, categoryId, money
+	 */
+	transactionsToMoneyPerCategory: function(transactions) {
+		return util.groupBy(
+			transactions,
+			["category", (transaction) => Wallet.getById(transaction.wallet).currency],
+			function(groupNames, recordsInGroup) {
+				return {
+					categoryId: groupNames[0],
+					currencyId: groupNames[1],
+					money: recordsInGroup.reduce((sum, transaction) => sum + parseInt(transaction.money), 0)
+				}
+			}
+		);
 	},
 };
 
