@@ -1,10 +1,15 @@
 // presentation layer imports
 const m = require("mithril")
 const {Breadcrumb, createBreadcrumb, Button} = require("mithril-materialized")
+const DataProvider = require("../components/DataProvider.jsx")
 const EventSummary = require("../components/EventSummary.jsx")
+const CategoryPieChart = require("../components/CategoryPieChart.jsx")
+const TransactionList = require("../components/TransactionList.jsx")
 
 // data layer imports
 const Event = require("../models/Event")
+const Report = require("../models/Report")
+const Transaction = require("../models/Transaction")
 
 
 /**
@@ -57,7 +62,15 @@ module.exports = function() {
 					]),
 				]),
 				m("ul.collection", 
-					m(EventSummary, {event: event}))
+					m(EventSummary, {event: event})),
+				m(DataProvider, {
+					fetch: Transaction.getWithFilter,
+					filter: {event: event.id},
+					viewWithData: (transactions) => ([
+						m(CategoryPieChart, {data: Report.transactionsToMoneyPerCategory(transactions)}),
+						m(TransactionList, {transactions: transactions})
+					])
+				})
 			])
 		}
 	}
