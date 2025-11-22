@@ -18,6 +18,16 @@ const WAITING = 1, READY = 2, ERROR = 3;
  * @attribute filter  an argument for the fetch function. When there are
  * changes in this attribute (shallow equality check), the fetch function
  * will be called again.
+ * @attribute viewWithData  OPTIONAL. A function which accepts the data as a 
+ * parameter and returns a vnode to draw. Only called if there was no error.
+ * @attribute stream  OPTIONAL. A Mithril Stream to contain the data. Use this
+ * if the data will be used in multiple places
+ * 
+ * 
+ * Children:
+ * If there is 1 child element, it will be drawn when the data is ready. The
+ * data will be injected as a "data" attribute.
+ * Otherwise, you can provide a render function as an attribute.
  */
 module.exports = function() {
 	let status = WAITING; // the status of the asynchronous data fetch
@@ -59,6 +69,9 @@ module.exports = function() {
 			else if(status == READY) {
 				if(vnode.children.length > 0) {
 					vnode.children[0].attrs.data = data; // inject attribute
+				}
+				else if(typeof vnode.attrs.viewWithData === "function") {
+					return vnode.attrs.viewWithData(data);
 				}
 				return vnode.children;
 			}
