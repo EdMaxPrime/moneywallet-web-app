@@ -23,6 +23,10 @@ const WAITING = 1, READY = 2, ERROR = 3;
  * @attribute stream  OPTIONAL. A Mithril Stream to contain the data. Use this
  * if the data will be used in multiple places
  * 
+ * @attribute loadingText  string. Text to show while loading. There is a default
+ * @attribute errorText  string. Text to show if error object has no message
+ * @attribute errorTitle  string. Text to show if there was an error
+ * 
  * 
  * Children:
  * If there is 1 child element, it will be drawn when the data is ready. The
@@ -63,8 +67,12 @@ module.exports = function() {
 		oninit: fetchData,
 		onupdate: fetchData,
 		view: function(vnode) {
+			const loadingText = vnode.attrs.loadingText || "Loading chart data...";
+			const errorTitle = vnode.attrs.errorTitle || "Failed to generate report";
+			const errorText = vnode.attrs.errorText || "There was an error fetching chart data. Please try refreshing the page later.";
+
 			if(status == WAITING) {
-				return m("div", {style: "height: 400px; border-radius: 20px; padding: 5em; border: 5px solid #b2dfdb;"}, "Loading chart data...");
+				return m("div", {style: "height: 400px; border-radius: 20px; padding: 5em; border: 5px solid #b2dfdb;"}, loadingText);
 			}
 			else if(status == READY) {
 				if(vnode.children.length > 0) {
@@ -78,8 +86,8 @@ module.exports = function() {
 			else if(status == ERROR) {
 				return m("div", {style: "border-radius: 20px; padding: 5em; border: 5px solid #f44336;"}, 
 					[
-						m("h3", "Failed to generate report"), 
-						m("p", error? error : "There was an error fetching chart data. Please try refreshing the page later.")
+						m("h3", errorTitle), 
+						m("p", error? error : errorText)
 					]);
 			}
 		}

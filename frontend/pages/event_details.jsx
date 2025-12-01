@@ -61,65 +61,61 @@ const WalletBalanceSheet = {
 module.exports = function() {
 	return {
 		view: function(vnode) {
-			let event = Event.getById(vnode.attrs.event_id);
-
-			// not found
-			if(event == null) {
-				return m("div.card-panel.red.accent-1", [
-					m("span.material-icons.outlined", "error"), 
-					m("span", "This event does not exist. The link may have been incorrect.")
-				]);
-			}
-
-			// found
-			return m("", [
-				m(".row", [
-					m(".col s12 m6",
-						m(Breadcrumb, {
-							showHome: false,
-							showIcons: true,
-							separator: "chevron_right",
-							items: [
-								{text: "Home", href: "", active: false}, 
-								{text: "Events", href: m.route.prefix+"/events", active: false},
-								{text: event.name, href: m.route.get(), active: true},
-							],
-						})
-					),
-					m(".col s12 m6 right-align", [
-						m(Button, {
-							label: "Edit",
-							iconName: "edit",
-							style: "margin-right: 15px",
-							href: m.route.prefix+m.route.get()+"/edit"
-						}),
-						m(Button, {
-							label: "Delete",
-							iconName: "delete",
-							className: "black-text grey lighten-1",
-							onclick: () => alert("This feature is not implemented yet.")
-						})
+			// load event
+			return m(DataProvider, {
+				fetch: Event.getByIdAsync,
+				filter: vnode.attrs.event_id,
+				errorTitle: "Event Not Found",
+				errorText: "Please make sure the URL is correct. The event may have been deleted.",
+				viewWithData: (event) => m("", [
+					m(".row", [
+						m(".col s12 m6",
+							m(Breadcrumb, {
+								showHome: false,
+								showIcons: true,
+								separator: "chevron_right",
+								items: [
+									{text: "Home", href: "", active: false}, 
+									{text: "Events", href: m.route.prefix+"/events", active: false},
+									{text: event.name, href: m.route.get(), active: true},
+								],
+							})
+						),
+						m(".col s12 m6 right-align", [
+							m(Button, {
+								label: "Edit",
+								iconName: "edit",
+								style: "margin-right: 15px",
+								href: m.route.prefix+m.route.get()+"/edit"
+							}),
+							m(Button, {
+								label: "Delete",
+								iconName: "delete",
+								className: "black-text grey lighten-1",
+								onclick: () => alert("This feature is not implemented yet.")
+							})
+						]),
 					]),
+					m("div.container", [
+						m("h2", event.name),
+						m("p", "From " + dayjs(event.start_date).formatDate() + " to " + dayjs(event.end_date).formatDate() + ". " + (event.note || "")),
+						m("div", [
+							m(WalletBalanceSheet, {data: event.summary_by_wallet}),
+							m("strong", "Total: "),
+							m(MoneyAmounts, {list: event.summary_by_currency})
+						])
+					]),
+					m(DataProvider, {
+						fetch: Transaction.getWithFilter,
+						filter: {event: event.id},
+						viewWithData: (transactions) => ([
+							m(CategoryPieChart, {data: Report.transactionsToMoneyPerCategory(transactions)}),
+							m("h3", "Transactions"),
+							m(TransactionList, {transactions: transactions})
+						])
+					})
 				]),
-				m("div.container", [
-					m("h2", event.name),
-					m("p", "From " + dayjs(event.start_date).formatDate() + " to " + dayjs(event.end_date).formatDate() + ". " + (event.note || "")),
-					m("div", [
-						m(WalletBalanceSheet, {data: event.summary_by_wallet}),
-						m("strong", "Total: "),
-						m(MoneyAmounts, {list: event.summary_by_currency})
-					])
-				]),
-				m(DataProvider, {
-					fetch: Transaction.getWithFilter,
-					filter: {event: event.id},
-					viewWithData: (transactions) => ([
-						m(CategoryPieChart, {data: Report.transactionsToMoneyPerCategory(transactions)}),
-						m("h3", "Transactions"),
-						m(TransactionList, {transactions: transactions})
-					])
-				})
-			])
+			})
 		}
 	}
 }
