@@ -94,8 +94,37 @@ const shallowEquals = function(object1, object2) {
 	return true;
 }
 
+/**
+ * Converts a list of objects to a nested object.
+ * 
+ * @param list  list of objects that have the same structure
+ * @param key  string. Every object in the list must have a unique value for
+ * this key. The key's value will become the new mapping
+ * @param values  optional. List of properties to copy from the objects.
+ * If not provided, then the whole object will be copied.
+ * 
+ * @return object
+ */
+const listToMap = function(list, key, values) {
+	const object = {};
+	if(Array.isArray(list) && typeof key === "string") {
+		for(let item of list) {
+			if(values) {
+				object[ item[key] ] = {};
+				for(let prop of values) {
+					object[ item[key] ][prop] = item[prop];
+				}
+			}
+			else
+				object[ item[key] ] = item;
+		}
+	}
+	return object;
+}
+
 
 module.exports = {
 	groupBy: groupBy,
 	shallowEquals: shallowEquals,
+	listToMap: listToMap,
 };
