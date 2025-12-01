@@ -1,6 +1,7 @@
 const m = require("mithril")
 const TransactionItem = require("../components/TransactionItem")
 const MoneyAmount = require("./MoneyAmount.jsx")
+const MoneyAmounts = require("./MoneyAmounts.jsx")
 
 const Util = require("../models/index.js")
 
@@ -106,9 +107,7 @@ module.exports = {
 								{formatBucketDates(bucket)}
 							</h6>
 							<div class="col s6 right-align">
-							{Object.entries(bucket.sumByCurrency).map(
-								([currencyId, sum]) => <MoneyAmount key={currencyId} direction={sum >= 0} currencyId={currencyId} money={sum} />)
-							}
+								<MoneyAmounts map={bucket.sumByCurrency} />
 							</div>
 						</li>
 					].concat(bucket.items.map(transaction => 
