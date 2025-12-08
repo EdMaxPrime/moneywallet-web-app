@@ -40,7 +40,7 @@ module.exports = {
 	view: function(vnode) {
 		const route = m.route.get();
 		return [
-			m("header", [
+			m("header.with-sidebar", [
 				m("nav", m("h1.green.accent-1", vnode.attrs.title)),
 				m(Sidenav, {
 					isOpen: true,
@@ -93,7 +93,7 @@ module.exports = {
 					m("a.top-nav.sidenav-trigger.full.hide-on-large-only",
 						m(Icon, "menu")))
 			]),
-			m("main", [m(TransactionModal)].concat(vnode.children))
+			m("main.with-sidebar", [m(TransactionModal)].concat(vnode.children))
 		];
 	},
 }

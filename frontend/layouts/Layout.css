@@ -1,11 +1,11 @@
 /* Account for side bar being open on large screens */
-header, main, footer {
+header.with-sidebar, main.with-sidebar, footer.with-sidebar {
   padding-left: 300px;
 }
 
 /* Account for side bar being collapsed on small screens */
 @media only screen and (max-width : 992px) {
-  header, main, footer {
+  header.with-sidebar, main.with-sidebar, footer.with-sidebar {
     padding-left: 60px;
   }
 }

@@ -83,4 +83,28 @@ o.spec("Group By", function() {
 		o(result[3]).deepEquals({direction: '1', category: "b", money: 2200});
 	});
 
+});
+
+const stream = require("mithril/stream");
+
+o.spec("streams", function() {
+	o("stream skips duplicate", function() {
+		let timesInvoked = 0;
+
+		let a = stream(1);
+		let b = a.map(a => {
+			timesInvoked++;
+			return a + 1;
+		});
+
+		o(timesInvoked).equals(1)("map invoked first time");
+
+		a(1);
+		a(1);
+		a(1);
+		o(timesInvoked).equals(4)("map invoked with duplicate value");
+
+		a(2);
+		o(timesInvoked).equals(5)("map invoked with second value");
+	})
 })
