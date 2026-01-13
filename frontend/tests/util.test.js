@@ -108,3 +108,43 @@ o.spec("streams", function() {
 		o(timesInvoked).equals(5)("map invoked with second value");
 	})
 })
+
+
+const currency = require("currency.js");
+o.spec("currency", function() {
+	o("currency initialization", function() {
+		const x = currency("abc");
+		o(x.intValue).equals(0)("abc returns 0");
+		const y = currency("abc", {errorOnInvalid: true});
+		o(y.intValue).equals(0)("abc error");
+	})
+})
+
+
+
+const Transaction = require("../models/Transaction");
+o.spec("Filter", function() {
+	o("Empty Filter", function() {
+		const empty = new Transaction.Filter();
+		o(empty.toString(true)).equals("")("empty constructor results in empty string");
+		const empty2 = new Transaction.Filter();
+		o(empty.equals(empty2)).equals(true)("two empty Filters are equivalent");
+		o(Util.shallowEquals(empty, empty2)).equals(true)("two empty Filters are shallow equivalent");
+	})
+
+	o("Search Term Filter", function() {
+		const test = new Transaction.Filter({
+			searchTerm: "test",
+			matchNote: true
+		});
+
+		o(test.toString(true)).equals("(description ~ 'test' || note ~ 'test')")("search term matches description or note");
+
+		const test2 = new Transaction.Filter({
+			searchTerm: "test",
+			matchNote: true
+		});
+
+		o(Util.shallowEquals(test, test2)).equals(true)("2 filters with same search term are equal");
+	})
+})
