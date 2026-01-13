@@ -1,0 +1,10 @@
+/* Override styles in Mithril Materialized */
+input.selection-checkbox {
+	opacity: 1 !important;
+	position: static !important;
+	left: auto;
+	top: auto;
+	transform: none;
+	margin-right: 0;
+	vertical-align: middle;
+}
