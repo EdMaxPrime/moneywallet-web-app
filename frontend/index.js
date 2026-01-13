@@ -22,6 +22,7 @@ const Register = require("./pages/register.jsx")
 const ReportCategories = require("./pages/report_detailed.jsx")
 const Settings = require("./pages/settings.jsx")
 const Transactions = require("./pages/transactions.jsx")
+const TransactionBulkEdit = require("./pages/transaction_bulk_edit.jsx")
 const TransactionSearch = require("./pages/transaction_search.jsx")
 const Welcome = require("./pages/welcome.jsx")
 
@@ -115,6 +116,7 @@ function loginAndDataRequired(page, title, otherData) {
 m.route(document.body, "/register", {
 	"/transactions": loginAndDataRequired(Transactions, "Transactions"),
 	"/transactions/search": loginAndDataRequired(TransactionSearch, "Search Results"),
+	"/transactions/bulk_edit": loginAndDataRequired(TransactionBulkEdit, "Edit Many At Once"),
 	"/wallets/create": loginAndDataRequired(CreateWallet, "Create Wallet"),
 	"/categories": loginAndDataRequired(Categories, "Categories"),
 	"/category/:id": loginAndDataRequired(CategoryView, parameters => Category.getById(parameters.id).name),
