@@ -15,6 +15,9 @@ const TransactionBulkEditForm = function() {
 	this.transactions = []; // list of search results, not all will be edited
 	this.status = READY; // status of network requests
 
+	// fields to change
+	this.newValues = {};
+
 	/**
 	 * Reset the form
 	 */
@@ -22,6 +25,7 @@ const TransactionBulkEditForm = function() {
 		this.selectedIds = [];
 		this.transactions = [];
 		this.status = READY;
+		this.newValues = {};
 	}
 
 	/**
@@ -75,6 +79,24 @@ const TransactionBulkEditForm = function() {
 		if(indexInList > -1) {this.selectedIds.splice(indexInList, 1);}
 		else {this.selectedIds.push(id);}
 	}
+
+	this.changeCategory = function(categoryId) {
+		this.newValues.category = categoryId;
+	}
+
+	this.doNotChangeCategory = function() {
+		delete this.newValues.category;
+	}
+
+	this.isCategoryChanging = function() {console.log(this.newValues); return "category" in this.newValues;}
+
+	this.getNewCategory = function() {return this.newValues.category;}
+
+	/**
+	 * Count changes?
+	 * @return  array of Transaction objects with new values
+	 */
+	this.previewChanges = function() {}
 }
 
 
